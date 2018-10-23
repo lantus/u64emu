@@ -10,7 +10,7 @@
 #include "iRom.h"			// Rom (cart) emulation routines
 
 WORD EndianChangeMode;
-fstream *iRomFile;
+ifstream *iRomFile;
 WORD iRomNumPages;
 #define ROM_PAGE_SIZE 0x20000  //128K
 BYTE *iRomPageMap;
@@ -40,14 +40,14 @@ void iRomDestruct()
 
 int iRomReadImage(char *filename)
 {   
-	fstream *in;
+	ifstream *in;
     BYTE    endian_1;
     BYTE    endian_2;
     BYTE    endian_3;
     BYTE    endian_4;
    
 
-	iRomFile=(fstream *)new fstream();
+	iRomFile=(ifstream *)new ifstream();
 	in=iRomFile;
 	in->open(filename, ios::binary);
 	if(!in->is_open())
@@ -162,14 +162,14 @@ int iRomReadImage(char *filename)
 
 int iRomReadHeader(char *filename)
 {   
-	fstream *in;
+	ifstream *in;
     BYTE    endian_1;
     BYTE    endian_2;
     BYTE    endian_3;
     BYTE    endian_4;
    
 
-	in=(fstream *)new fstream();
+	in=(ifstream *)new ifstream();
 	in->open(filename,ios::binary);
 	if(!in->is_open())
 	{

@@ -175,20 +175,20 @@ void BootKI1(void)
 	gAllowHLE	= true;
 	bQuitSignal	= false;
 
-	strcpy(theApp.m_HDImage, "d:\\KI1\\ki.img");
+	strcpy(theApp.m_HDImage, "ki.img");
 
-	strcpy(theApp.m_ARom1, "d:\\KI1\\u10-l1");
-	strcpy(theApp.m_ARom2, "d:\\KI1\\u11-l1");
-	strcpy(theApp.m_ARom3, "d:\\KI1\\u12-l1");
-	strcpy(theApp.m_ARom4, "d:\\KI1\\u13-l1");
-	strcpy(theApp.m_ARom5, "d:\\KI1\\u33-l1");
-	strcpy(theApp.m_ARom6, "d:\\KI1\\u34-l1");
-	strcpy(theApp.m_ARom7, "d:\\KI1\\u35-l1");
-	strcpy(theApp.m_ARom8, "d:\\KI1\\u36-l1");
+	strcpy(theApp.m_ARom1, "u10-l1");
+	strcpy(theApp.m_ARom2, "u11-l1");
+	strcpy(theApp.m_ARom3, "u12-l1");
+	strcpy(theApp.m_ARom4, "u13-l1");
+	strcpy(theApp.m_ARom5, "u33-l1");
+	strcpy(theApp.m_ARom6, "u34-l1");
+	strcpy(theApp.m_ARom7, "u35-l1");
+	strcpy(theApp.m_ARom8, "u36-l1");
   
 	gRomSet = KI1;
 	e.Init();
-	e.Emulate("d:\\KI1\\U98-L15d");
+	e.Emulate("u98-l15d");
 	theApp.m_UCode = 0;
 
 	while (!bQuitSignal);

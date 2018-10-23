@@ -1,0 +1,8 @@
+
+exefs/main
+*.o
+release/kinx.pfs0
+release/kinx.nso
+release/kinx.nro
+release/kinx.nacp
+release/kinx.elf
