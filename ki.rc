@@ -1,0 +1,530 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\ki.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\ki.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About ki"
+FONT 8, "MS Sans Serif"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    LTEXT           "ki Version 1.0",IDC_STATIC,40,10,119,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2000",IDC_STATIC,40,25,119,8
+    DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
+END
+
+IDD_KI_DIALOG DIALOGEX 0, 0, 377, 246
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "U64Emu - V3.02"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "&Close",IDOK,310,0,50,14
+    DEFPUSHBUTTON   "&Run",IDC_DoIt,10,0,50,14
+    PUSHBUTTON      "&DIP Switches",IDC_DIPSwitches,210,0,50,14
+    PUSHBUTTON      "&Input Config",IDC_Input,160,0,50,14
+    PUSHBUTTON      "&Settings",IDC_Settings,110,0,50,14
+    PUSHBUTTON      "&About",IDC_About,260,0,50,14
+    PUSHBUTTON      "&GameSet",IDC_RomSet,60,0,50,14
+END
+
+IDD_EmuObject DIALOG DISCARDABLE  0, 0, 396, 273
+STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU | 
+    WS_THICKFRAME
+CAPTION "KI"
+FONT 8, "MS Sans Serif"
+BEGIN
+END
+
+IDD_ControllerConfig DIALOG DISCARDABLE  0, 0, 202, 281
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Control Configuration"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,5,255,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,145,255,50,14
+    LISTBOX         IDC_Controls,5,30,95,220,LBS_NOINTEGRALHEIGHT | 
+                    WS_VSCROLL | WS_TABSTOP
+    LISTBOX         IDC_ControlsMap,100,30,95,220,LBS_NOINTEGRALHEIGHT | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Double Click on the input control to change the mapping.",
+                    IDC_STATIC,5,5,185,15
+END
+
+IDD_Debugger DIALOG DISCARDABLE  0, 0, 598, 410
+STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU | 
+    WS_THICKFRAME
+CAPTION "TRWin Visual Debugger"
+FONT 10, "Courier New"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,355,385,50,14
+    LISTBOX         IDC_AsmListing,5,0,205,325,LBS_OWNERDRAWFIXED | 
+                    LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | 
+                    WS_TABSTOP
+    CONTROL         "Tab1",IDC_Registers,"SysTabControl32",0x0,435,5,160,300
+    LISTBOX         IDC_CallStack,435,310,160,40,LBS_SORT | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LISTBOX         IDC_Watch,435,355,160,45,LBS_SORT | LBS_NOINTEGRALHEIGHT | 
+                    WS_VSCROLL | WS_TABSTOP
+    LISTBOX         IDC_RegList,440,20,150,285,LBS_OWNERDRAWFIXED | 
+                    LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | 
+                    WS_TABSTOP
+    PUSHBUTTON      "&Step",IDC_Step,5,335,50,14
+    PUSHBUTTON      "Step &Into",IDC_StepInto,5,355,50,14
+    PUSHBUTTON      "&Go",IDC_Go,5,375,50,14
+    PUSHBUTTON      "&Break",IDC_Break,60,335,50,14
+    PUSHBUTTON      "Break&Points",IDC_BreakPoints,60,355,50,14
+    LISTBOX         IDC_DSPListing,215,0,215,325,LBS_SORT | 
+                    LBS_OWNERDRAWFIXED | LBS_HASSTRINGS | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Static",IDC_PC,240,395,90,8
+    PUSHBUTTON      "&Step",IDC_StepDSP,205,335,50,14
+    PUSHBUTTON      "Step &Into",IDC_StepIntoDSP,205,355,50,14
+    PUSHBUTTON      "&Go",IDC_GoDSP,205,375,50,14
+    PUSHBUTTON      "&Break",IDC_BreakDSP,260,335,50,14
+    PUSHBUTTON      "Break&Points",IDC_BreakPointsDSP,260,355,50,14
+END
+
+IDD_Remap DIALOG DISCARDABLE  0, 0, 186, 95
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Capture Mapping"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,65,70,50,14
+    LTEXT           "Press the desired key, button or move the control you wish to map.  Click OK when complete.",
+                    IDC_STATIC,10,20,160,25
+    LTEXT           "MapText",IDC_MapText,65,50,95,8
+    LTEXT           "Static",IDC_ModifyText,10,5,150,8
+END
+
+IDD_Settings DIALOG DISCARDABLE  0, 0, 342, 196
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Advanced Settings"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,225,175,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,285,175,50,14
+    LTEXT           "Resolution",IDC_STATIC,20,25,50,8
+    COMBOBOX        IDC_ScreenResolution,90,20,100,95,CBS_DROPDOWN | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Emulate Scanlines (implies full screen)",
+                    IDC_EmulateScanlines,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,20,41,170,10
+    CONTROL         "Full Screen",IDC_FullScreen,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,20,55,170,10
+    GROUPBOX        "Display",IDC_STATIC,5,10,200,60
+    GROUPBOX        "Emulation Settings",IDC_STATIC,5,80,200,60
+    LTEXT           "Frame Rate",IDC_STATIC,15,95,38,8
+    EDITTEXT        IDC_FrameRate,80,90,40,14,ES_AUTOHSCROLL
+    CONTROL         "No HLE (requires 900MHz or greater)",IDC_FullHLE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,110,133,10
+END
+
+IDD_About DIALOG DISCARDABLE  0, 0, 197, 156
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,75,125,50,14
+    LTEXT           "This software emulates most of the hardware found in the early ""Ultra64"" Arcade Cabinets.  By providing the proper code and sample roms, along with the Hard Disk image, it is possible to play some of these games.  You MUST own these images to use them.",
+                    IDC_STATIC,15,40,165,60
+    LTEXT           "Please respect the property of others.  -rcp",
+                    IDC_STATIC,15,105,170,15
+    LTEXT           "U64Emu V3.02",IDC_STATIC,70,15,49,8
+    ICON            IDR_MAINFRAME,IDC_STATIC,10,5,20,20
+END
+
+IDD_DIPSettings DIALOG DISCARDABLE  0, 0, 397, 186
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "DIP Switch Settings"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,250,160,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,325,160,50,14
+    GROUPBOX        "DIP 1",IDC_STATIC,10,10,30,140
+    CONTROL         "",IDC_DIP1_SW1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,
+                    26,16,8
+    CONTROL         "",IDC_DIP1_SW2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,
+                    39,16,8
+    CONTROL         "",IDC_DIP1_SW3,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,
+                    55,16,8
+    CONTROL         "",IDC_DIP1_SW4,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,
+                    71,16,8
+    CONTROL         "",IDC_DIP1_SW5,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,
+                    85,16,8
+    CONTROL         "",IDC_DIP1_SW6,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,
+                    101,16,8
+    CONTROL         "",IDC_DIP1_SW7,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,
+                    114,16,8
+    CONTROL         "",IDC_DIP1_SW8,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,
+                    130,16,8
+    GROUPBOX        "DIP 2",IDC_STATIC,225,10,30,140
+    CONTROL         "",IDC_DIP2_SW1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    235,24,16,8
+    CONTROL         "",IDC_DIP2_SW2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    235,40,16,8
+    CONTROL         "",IDC_DIP2_SW3,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    235,54,16,8
+    CONTROL         "",IDC_DIP2_SW4,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    235,70,16,8
+    CONTROL         "",IDC_DIP2_SW5,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    235,85,16,8
+    CONTROL         "",IDC_DIP2_SW6,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    235,99,16,8
+    CONTROL         "",IDC_DIP2_SW7,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    235,115,16,10
+    CONTROL         "",IDC_DIP2_SW8,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    235,130,16,8
+    LTEXT           "Comment",IDC_DIP1_Text1,50,26,105,8
+    LTEXT           "Comment",IDC_DIP1_Text2,50,39,105,8
+    LTEXT           "Comment",IDC_DIP1_Text3,50,55,105,8
+    LTEXT           "Comment",IDC_DIP1_Text4,50,71,105,8
+    LTEXT           "Comment",IDC_DIP1_Text5,50,85,105,8
+    LTEXT           "Comment",IDC_DIP1_Text6,50,101,105,8
+    LTEXT           "Comment",IDC_DIP1_Text7,50,114,110,8
+    LTEXT           "Comment",IDC_DIP1_Text8,50,130,115,8
+    LTEXT           "Comment",IDC_DIP2_Text1,265,24,105,8
+    LTEXT           "Comment",IDC_DIP2_Text2,265,40,105,8
+    LTEXT           "Comment",IDC_DIP2_Text3,265,54,105,8
+    LTEXT           "Comment",IDC_DIP2_Text4,265,70,105,8
+    LTEXT           "Comment",IDC_DIP2_Text5,265,85,105,8
+    LTEXT           "Comment",IDC_DIP2_Text6,265,99,105,8
+    LTEXT           "Comment",IDC_DIP2_Text7,265,115,105,8
+    LTEXT           "On - Test Mode",IDC_DIP2_Text8,265,130,105,8
+    PUSHBUTTON      "&Default",IDC_Default,10,160,50,14
+END
+
+IDD_RomSet DIALOGEX 0, 0, 332, 226
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "RomSet - HardDisk Image"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,205,205,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,270,205,50,14
+    GROUPBOX        "Rom Set/Hard Disk",IDC_STATIC,5,10,315,185,0,
+                    WS_EX_TRANSPARENT
+    LTEXT           "U98 - Main Code",IDC_STATIC,15,41,54,8,0,
+                    WS_EX_TRANSPARENT
+    EDITTEXT        IDC_Rom1,80,39,145,10,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse",IDC_Browse1,245,36,50,14
+    LTEXT           "U10 - Samples",IDC_STATIC,15,57,47,8,0,
+                    WS_EX_TRANSPARENT
+    EDITTEXT        IDC_Rom2,80,54,145,10,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse",IDC_Browse2,245,50,50,14
+    LTEXT           "U11 - Samples",IDC_STATIC,15,71,47,8,0,
+                    WS_EX_TRANSPARENT
+    EDITTEXT        IDC_Rom3,80,70,145,10,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse",IDC_Browse3,245,65,50,14
+    LTEXT           "U12 - Samples",IDC_STATIC,15,86,47,8,0,
+                    WS_EX_TRANSPARENT
+    EDITTEXT        IDC_Rom4,80,84,145,10,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse",IDC_Browse4,245,81,50,14
+    LTEXT           "U13 - Samples",IDC_STATIC,15,102,47,8,0,
+                    WS_EX_TRANSPARENT
+    EDITTEXT        IDC_Rom5,80,100,145,10,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse",IDC_Browse5,245,95,50,14
+    LTEXT           "U34 - Samples",IDC_STATIC,15,130,47,8,0,
+                    WS_EX_TRANSPARENT
+    EDITTEXT        IDC_Rom6,80,114,145,10,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse",IDC_Browse6,245,110,50,14
+    LTEXT           "U35 - Samples",IDC_STATIC,15,145,47,8,0,
+                    WS_EX_TRANSPARENT
+    EDITTEXT        IDC_Rom7,80,129,145,10,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse",IDC_Browse7,245,126,50,14
+    LTEXT           "U36 - Samples",IDC_STATIC,15,161,47,8,0,
+                    WS_EX_TRANSPARENT
+    EDITTEXT        IDC_Rom8,80,145,145,10,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse",IDC_Browse8,245,140,50,14
+    LTEXT           "U33 - Samples",IDC_STATIC,15,116,47,8,0,
+                    WS_EX_TRANSPARENT
+    EDITTEXT        IDC_Rom9,80,159,145,10,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse",IDC_Browse9,245,156,50,14
+    LTEXT           "HD Image",IDC_STATIC,15,175,33,8
+    EDITTEXT        IDC_HDImage,80,175,145,10,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse",IDC_HDBrowse,245,170,50,14
+    LTEXT           "Set Name",IDC_STATIC,15,25,32,8,0,WS_EX_TRANSPARENT
+    COMBOBOX        IDC_SetName,81,20,145,45,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP,WS_EX_TRANSPARENT
+END
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,2
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", "RCP's Emus\0"
+            VALUE "FileDescription", "Ultra64 Emulator\0"
+            VALUE "FileVersion", "1, 14, 0, 1\0"
+            VALUE "InternalName", "ki\0"
+            VALUE "LegalCopyright", "Copyright (C) 2000-2002 - rcp\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "U64Emu.exe\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "Ultra64 Emulator\0"
+            VALUE "ProductVersion", "1, 0, 0, 2\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 48
+    END
+
+    IDD_KI_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 370
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 239
+    END
+
+    IDD_EmuObject, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 389
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 266
+    END
+
+    IDD_ControllerConfig, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 195
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 274
+    END
+
+    IDD_Debugger, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 591
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 403
+    END
+
+    IDD_Remap, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
+    END
+
+    IDD_Settings, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 335
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 189
+    END
+
+    IDD_About, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 190
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 149
+    END
+
+    IDD_DIPSettings, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 390
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 179
+    END
+
+    IDD_RomSet, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 325
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 219
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_Settings DLGINIT
+BEGIN
+    IDC_ScreenResolution, 0x403, 8, 0
+0x3436, 0x7830, 0x3834, 0x0030, 
+    IDC_ScreenResolution, 0x403, 8, 0
+0x3038, 0x5830, 0x3036, 0x0030, 
+    IDC_ScreenResolution, 0x403, 9, 0
+0x3031, 0x3432, 0x3778, 0x3836, "\000" 
+    IDC_ScreenResolution, 0x403, 10, 0
+0x3231, 0x3038, 0x3178, 0x3230, 0x0034, 
+    0
+END
+
+IDD_RomSet DLGINIT
+BEGIN
+    IDC_SetName, 0x403, 5, 0
+0x494b, 0x3120, "\000" 
+    IDC_SetName, 0x403, 5, 0
+0x494b, 0x3220, "\000" 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_Logo                BITMAP  DISCARDABLE     "res\\bitmap1.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ABOUTBOX            "&About ki..."
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\ki.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
