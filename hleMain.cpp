@@ -5,8 +5,6 @@
 
 #include "hleMain.h"
 #include "iMemory.h"
-#include "dynaNative.h"
-#include "dynaFP.h"
 #include "hleDSP.h"
 #include "iCPU.h"
 
@@ -20,9 +18,8 @@ void hleKeyInput();
 
 void hleICache()
 {
-	DWORD addr=r->GPR[A0*2];
-	DWORD len=r->GPR[A1*2];
-	dynaInvalidate(addr,len);
+	return;
+	 
 }
 
 void hleVirtualToPhysical()
@@ -83,15 +80,7 @@ void hle_ll_mul()
 
 DWORD hleMakeAddrIndex(BYTE Reg)
 {
-	if(iMemTLBActive)
-	{
-		DWORD addr=r->GPR[Reg*2];
-		return((DWORD)iMemPhysReadAddr(addr)-(DWORD)m->rdRam);
-	}
-	else
-	{
-		return((DWORD)(r->GPR[Reg*2]&0x3fffff));
-	}
+	return((DWORD)(r->GPR[Reg*2]&0x3fffff));
 }
 
 void hleNormalize()
@@ -236,25 +225,7 @@ void hleSin()
 	double result=sin((float) *(float *)&r->FPR[12]);
 	*(float *)&r->FPR[0]=(float) result;
 }
-
-
-WORD CALL_C_FUNC(BYTE *cp,DWORD Address)
-{
-	WORD l=0;
-	l+=PUSH_ALL(cp+l);
-	int Current=(int)*(cp) + l + 5;			//TODO:FIX
-	int Offset=Address-Current;
-	cp+=l;
-	*(cp++)=0xe8;
-	l++;
-	memcpy(cp,&Offset,4);
-	l+=4;
-	cp+=4;
-	l+=POP_ALL(cp);
-	return(l);
-}
-
-
+ 
 void hleDelay()
 {
 	DWORD delay;
@@ -474,25 +445,13 @@ void hleRandom()
 
 WORD hlePatchScreenCopy(BYTE *cp)
 {
-	WORD len=0;
-	DWORD NextAddy=dynaGetCompiledAddress(r->PC+40);
-	iOpCode=dynaNextOpCode;
-	len+=CALL_FUNCTION(cp+len,(DWORD)hleScreenCopy);
-	DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-	len+=JMP_LONG(cp+len,NextAddy);
-	return(len);
+	return 0;
 }
 
 WORD hlePatchPal(BYTE *cp)
 {
-	WORD len=0;
-	DWORD NextAddy=dynaGetCompiledAddress(0x88010FCC);
-	iOpCode=dynaNextOpCode;
-	len+=MainInstruction[dynaNextOpCode>>26](cp+len);
-//	len+=CALL_FUNCTION(cp+len,(DWORD)hleScreenCopy);
-	DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-	len+=JMP_LONG(cp+len,NextAddy);
-	return(len);
+	return 0;
+ 
 }
 
 void hleScreenCopy()
@@ -505,476 +464,7 @@ void hleScreenCopy()
 
 WORD hleCheckFunction(BYTE *cp,DWORD Address)
 {
-	WORD len=0;
-	DWORD NextAddy=dynaGetCompiledAddress(r->PC+4);
-		
-/*
-	if((Address&0x3fffff)==0x2A56C)
-	{
-		iOpCode=dynaNextOpCode;
-		len+=MainInstruction[dynaNextOpCode>>26](cp+len);
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleKeyInput);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-*/
-	if(!gAllowHLE)
-		return(len);
-	if((Address&0x3fffff)==0x5BDD)
-	{
-		iOpCode=dynaNextOpCode;
-		len+=MainInstruction[dynaNextOpCode>>26](cp+len);
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleRandom);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-/*
-32818
-	*/
-	if((Address&0x3fffff)==0x32819)
-	{
-		iOpCode=dynaNextOpCode;
-//		len+=CALL_FUNCTION(cp+len,(DWORD)hleFMV1);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0x31c58)
-	{
-		iOpCode=dynaNextOpCode;
-		len+=MainInstruction[dynaNextOpCode>>26](cp+len);
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleFMV2);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-/*
-	if((Address&0x3fffff)==0x3228d)
-	{
-		iOpCode=dynaNextOpCode;
-		len+=MainInstruction[dynaNextOpCode>>26](cp+len);
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleFMVSub2Patch);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0x32330)
-	{
-		iOpCode=dynaNextOpCode;
-		len+=MainInstruction[dynaNextOpCode>>26](cp+len);
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleFMVSub1Patch);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-*/
-	if((Address&0x3fffff)==0x1b69c1)
-	{
-		iOpCode=dynaNextOpCode;
-//		len+=CALL_FUNCTION(cp+len,(DWORD)hleDelay);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0x1418)
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleWaitVSYNC);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0x1fc0)
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleWaitVSYNC);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0x12660)
-	{
-		iOpCode=dynaNextOpCode;
-		len+=MainInstruction[dynaNextOpCode>>26](cp+len);
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleDelayFrames);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0x12614)
-	{
-		iOpCode=dynaNextOpCode;
-		len+=MainInstruction[dynaNextOpCode>>26](cp+len);
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleDelayFrame);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-/*
-	if((Address&0x3fffff)==0x1b0c0)
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleTri);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0x1beb0)
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleTri);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0x1BFF8)
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleTri);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0x1BF54)
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleTri);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-*/
-	if((Address&0x3fffff)==0x29f85)
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleDelay);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0x3e08)
-	{
-		iOpCode=dynaNextOpCode;
-		len+=MainInstruction[dynaNextOpCode>>26](cp+len);
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleSendDSPCommand);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0x12615)
-	{
-		iOpCode=dynaNextOpCode;
-//		len+=CALL_FUNCTION(cp+len,(DWORD)hleDelay);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0x30ccc)
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleWriteBlock);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0x3108c)
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleBuildBG);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0xcd15)
-	{
-		iOpCode=dynaNextOpCode;
-//		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0xc744) //background
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleFlatScroll);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0xcb39) //?
-	{
-		iOpCode=dynaNextOpCode;
-//		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0xcac1) //part two of clouds
-	{
-		iOpCode=dynaNextOpCode;
-//		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0xca05) //?
-	{
-		iOpCode=dynaNextOpCode;
-//		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0x12a59) //?
-	{
-		iOpCode=dynaNextOpCode;
-//		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0x125D4) //invalidate dcache - probably screen ram
-	{
-		iOpCode=dynaNextOpCode;
-//		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0xCE31) //big level shit
-	{
-		iOpCode=dynaNextOpCode;
-//		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0x5881) //end animation?
-	{
-		iOpCode=dynaNextOpCode;
-//		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0x8B9) //get input
-	{
-		iOpCode=dynaNextOpCode;
-//		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0xC021) //?
-	{
-		iOpCode=dynaNextOpCode;
-//		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0x2039) //gameplay?
-	{
-		iOpCode=dynaNextOpCode;
-//		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0x965) //?
-	{
-		iOpCode=dynaNextOpCode;
-//		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0xD065) //
-	{
-		iOpCode=dynaNextOpCode;
-//		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0x1435) //display overlay
-	{
-		iOpCode=dynaNextOpCode;
-//		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0x8289) //audio control?
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0x1A1E9) //fp stuff
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0xEBAd) //?
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0x18c35) //upper sky
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0x18bb9) //maybe lower horizon?
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0x18c99) //background
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleBackground2);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if(((Address&0x3fffff)==0xd065)) //no effect.
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if(((Address&0x3fffff)==0xcdd)) //players and foreground stuff (bridge)
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if(((Address&0x3fffff)==0x965)) //no effect
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if(((Address&0x3fffff)==0x2039)) //player logic
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if(((Address&0x3fffff)==0x17e5)) //draws players.
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if(((Address&0x3fffff)==0xce31)) //background, all, see below parts
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if(((Address&0x3fffff)==0xce91)) //bridge
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if(((Address&0x3fffff)==0xC87c)) //animated sky
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleSkyAnim);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if(((Address&0x3fffff)==0xCd15)) //??
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if(((Address&0x3fffff)==0xC7A9)) //setupman for scrolling ?
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if(((Address&0x3fffff)==0xCB39)) //??
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if(((Address&0x3fffff)==0xCAC1)) //mist - huge, maybe a generated system and not a scrolling bitmap
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0xc7a9) //part one of clouds/mist
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if(((Address&0x3fffff)==0xCA05)) //birds
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if(((Address&0x3fffff)==0x162C8)) //clouds in desert rooftop
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if((Address&0x3fffff)==0xc745) //
-	{
-		iOpCode=dynaNextOpCode;
-//		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if(((Address&0x3fffff)==0x107A9)) //most overlays, players, clouds (non-transparent)?
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if(((Address&0x3fffff)==0x1882d)) //sky in desert rooftop level (at least)
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if(((Address&0x3fffff)==0x18c34)) //clear n rows
-	{
-		iOpCode=dynaNextOpCode;
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleClearRows);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if(((Address&0x3fffff)==0x18bB8)) //fills n rows with 16bit pixel
-	{
-		iOpCode=dynaNextOpCode;
-		len+=MainInstruction[dynaNextOpCode>>26](cp+len);
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleFillRows);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	if(((Address&0x3fffff)==0x18c98)) //part of sky
-	{
-		iOpCode=dynaNextOpCode;
-		len+=MainInstruction[dynaNextOpCode>>26](cp+len);
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleSkySub2);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-/*
-
-  
-	if(((Address&0x3fffff)==0x8CBC)) //collision dectection tween players
-	{
-		iOpCode=dynaNextOpCode;
-//		len+=CALL_FUNCTION(cp+len,(DWORD)hleDummy);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-*/
-	return(len);
+	 return 0;
 }
 
 void hleScrollBlock(DWORD op0)
@@ -1002,39 +492,14 @@ void hleCheckWriteBlock(DWORD op0)
 
 WORD hleCheckFunctionBGEZAL(BYTE *cp,DWORD Address,BYTE op0)
 {
-	WORD len=0;
-	DWORD NextAddy=dynaGetCompiledAddress(r->PC+8);
-	if(!gAllowHLE)
-		return(len);
-	if(((Address&0x3fffff)==0x30d10)&&(dynaNextOpCode==0))
-	{
-		iOpCode=dynaNextOpCode;
-		len+=PUSH_DWORD(cp+len,(DWORD)op0);
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleScrollBlock);
-		len+=POP_REGISTER(cp+len,NATIVE_2);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	return(len);
+	 return 0;
 
 }
 
 WORD hleCheckFunctionBLTZAL(BYTE *cp,DWORD Address,BYTE op0)
 {
-	WORD len=0;
-	DWORD NextAddy=dynaGetCompiledAddress(r->PC+4);
-	if(!gAllowHLE)
-		return(len);
-	if(((Address&0x3fffff)==0x30d95)) //&&(dynaNextOpCode==0))
-	{
-		iOpCode=dynaNextOpCode;
-		len+=PUSH_DWORD(cp+len,(DWORD)op0);
-		len+=CALL_FUNCTION(cp+len,(DWORD)hleCheckWriteBlock);
-		len+=POP_REGISTER(cp+len,NATIVE_2);
-		DWORD Offset=NextAddy-(DWORD)(cp+len+2);
-		len+=JMP_SHORT(cp+len,(BYTE)Offset);
-	}
-	return(len);
+ 
+	return 0;
 
 }
 
@@ -2637,9 +2102,7 @@ Label26cc0:
 
 void hleUpdateScreen(WORD page)
 {
-//	char *source=(char *)SRAM+(page*320*128+0x30000); //+0x12c00);
-
-//	theApp.m_EmuObj->m_Display->UpdateScreenBuffer(theApp.m_EmuObj,source,0);
+ 
 }
 
 void hleDSPCommand(WORD command)
@@ -2780,6 +2243,8 @@ void hleSendDSPCommand()
 
 void hleFMV1()
 {
+	svcOutputDebugString("hleFMV1()",20);
+	
 	//32818 addi       SP,SP,$FFFFFFF8                   SP=0:10         
 	//3281C sd         RA,$0(SP)                         *(10)           
 	short *s0=(short *)hleMakeP(r->GPR[S0*2]);
@@ -2814,6 +2279,8 @@ void hleFMVSub1(short *src,short *dst)
 	int t1,t2,t3,t4,t5,t6,t7,s3;
 	int at,s5,t8,s6,s7,s4,t9,s8;
 
+	svcOutputDebugString("hleFMVSub1()",20);
+	
 	t1=*src;
 	src+=16;
 	t2=*src;
@@ -3108,6 +2575,8 @@ void hleFMVSub2Patch()
 	DWORD v0,s1;
 	int s2;
 	QWORD s0;
+	
+	svcOutputDebugString("hleFMVSub2Patch()",20);
 
 	v0=r->GPR[V0*2];
 	s0=*(QWORD *)&r->GPR[S0*2];
@@ -3195,6 +2664,8 @@ void hleFMV2()
 	int a1,s2;
 	BYTE i = 0;
 
+	svcOutputDebugString("hleFMV2",20);
+	
 //	hleFMVDelay=true;
 
 	//31c58 addi       SP,SP,$FFFFFFF8                   SP=0:0          
@@ -3363,12 +2834,12 @@ void hleTri()
 		{
 			if(tp[i]==0)
 			{
-				tp[i]=(DWORD)src;
+				tp[i]=(unsigned long)src;
 				tnum++;
 				save=true;
 				break;
 			}
-			else if(tp[i]==(DWORD)src)
+			else if(tp[i]==(unsigned long)src)
 				break;
 		}
 /* TODO:FIX		

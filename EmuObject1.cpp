@@ -139,7 +139,6 @@ HRESULT CEmuObject::Init()
 
 /////////////////////////////////////////////////////////////////////////////
 // CEmuObject message handlers
-extern DWORD CatchMe;
  
 void CEmuObject::OnClose() 
 {
@@ -152,12 +151,6 @@ bool CEmuObject::UpdateDisplay()
 	if(!m_Open)
 		return false;
 
-	static char * ImageOffset;
-	static WORD screen=0;
-	static bool first3D=false;
-	DWORD width,height;
-	width=640;
-	height=480;
 
 	DWORD flags=0;
 	DWORD offset;
@@ -165,10 +158,8 @@ bool CEmuObject::UpdateDisplay()
 		offset=m->atReg[0x98];
 	else
 		offset=m->atReg[0x80];
-
-//	if(CatchMe==2)
-//		return(true);
-	char *source=(char *)SRAM+((offset)*320*128+0x30000); //+0x12c00);
+ 
+	unsigned char *source = (unsigned char *)SRAM + ((offset) * 320 * 128 + 0x30000); //+0x12c00);
 
 	m_NumVSYNCs++;
 	if(m_NumVSYNCs>90)
@@ -177,18 +168,9 @@ bool CEmuObject::UpdateDisplay()
 		iCpuNextVSYNC=svcGetSystemTick()+16;
 	}
 
-//	if(lagging&&theApp.m_Skip)
-	{
-//		m_Display->m_FrameCount++;
-	}
-//	else
-//	{
-		m_Display->UpdateScreenBuffer(source,(flags&0x03));
-//	}
+	m_Display->UpdateScreenBuffer(source);
 	
  
-	if(CatchMe)
-		CatchMe=2;
 	return true;
 }
 
@@ -265,16 +247,11 @@ void CEmuObject::Emulate(char *filename)
 	 
 
 	iMainConstruct((char *)m_FileName);
-	iRomReadImage((char *)m_FileName);
-	theApp.LogMessage("about to iMemCopyBootCode()");
-	iMemCopyBootCode();
-	theApp.LogMessage("about to iMainReset()");
-	iMainReset();
-	theApp.LogMessage("about to iMainStartCPU()");
+	iRomReadImage((char *)m_FileName);	 
+	iMemCopyBootCode();	 
+	iMainReset();	 
 	iMainStartCPU();
-
  
-
 }	
  
  

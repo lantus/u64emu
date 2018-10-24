@@ -39,7 +39,7 @@ class mmDisplay
 		void BeginScene();
 		void EndScene();
 		void Close();
-		void UpdateScreenBuffer(char *source,WORD Depth);
+		void UpdateScreenBuffer(unsigned char* source);
 		void MakeScreenBuffer();
 		HRESULT Open(WORD Width, WORD Height);
 

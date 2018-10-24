@@ -32,7 +32,7 @@
 #define PI_DMA_READ             0x4000
 #define ATA_UPDATE				0x8000
 
-//#define LOG_STUFF
+//#define LOG_STUFFn
 //extern QWORD ICount,NextIntCount;
 //#define LOG_ERRORS
 //#define LOG_TLBn
@@ -489,8 +489,8 @@ BYTE *iMemPhysWriteAddr(DWORD VAddr)
 							if (doframe==59) doframe=0;
 							if (doframe%2==0){**/
 							iCpuVSYNC();
-						/*	theApp.m_EmuObj->UpdateDisplay();
-							DWORD tmp=~theApp.m_EmuObj->m_InputDevice->MultiScan(inputs);//} TODO:FIX */
+							theApp.m_EmuObj->UpdateDisplay();
+							//DWORD tmp=~theApp.m_EmuObj->m_InputDevice->MultiScan(inputs);//}
 							*(DWORD *)&m->aiReg[0x98]=inputs[1]&0xffff;
 							*(DWORD *)&m->aiReg[0x90]=inputs[0]&0xffff;
 							break;
@@ -558,13 +558,8 @@ BYTE *iMemPhysWriteAddr(DWORD VAddr)
 				switch(VAddr&0xfff)
 				{
 					case 0x80:	//page flip register?
-						{
-/*
-if  (framespeed){
-	theApp.m_framesToSkip = 2;}
-else {
-	theApp.m_framesToSkip = 0;*/
-	iCpuVSYNC();
+						{							 
+							iCpuVSYNC();
 							theApp.m_EmuObj->UpdateDisplay();
 
 							//DWORD tmp=~theApp.m_EmuObj->m_InputDevice->MultiScan(inputs);
@@ -990,13 +985,6 @@ void iMemUpdateDPReg()
 void iMemCopyBootCode()
 {
 	DWORD *dst=(DWORD *)m->dspRMem;
-	
- 
-	theApp.LogMessage("size of QWORD is %d", sizeof(QWORD)); 
-	theApp.LogMessage("size of DWORD is %d", sizeof(DWORD)); 
-	theApp.LogMessage("size of WORD is %d", sizeof(WORD));
-	theApp.LogMessage("size of BYTE is %d", sizeof(BYTE));
- 
 
 	FILE *arom = NULL;
 	arom=fopen(theApp.m_ARom1,"rb");
@@ -1012,7 +1000,6 @@ void iMemCopyBootCode()
 	//delete arom;
 	dst+=512*256;
 
-	theApp.LogMessage("about to load theApp.m_ARom3");
 	arom=NULL;
 	arom=fopen(theApp.m_ARom3,"rb");
 	fread(dst,512*1024, 1, arom);
@@ -1020,7 +1007,6 @@ void iMemCopyBootCode()
 	//delete arom;
 	dst+=512*256;
 
-	theApp.LogMessage("about to load theApp.m_ARom4");
 	arom=NULL;
 	arom=fopen(theApp.m_ARom4,"rb");
 	fread(dst,512*1024, 1, arom);
@@ -1028,7 +1014,6 @@ void iMemCopyBootCode()
 	//delete arom;
 	dst+=512*256;
 
-	theApp.LogMessage("about to load theApp.m_ARom5");
 	arom=NULL;
 	arom=fopen(theApp.m_ARom5,"rb");
 	fread(dst,512*1024, 1, arom);
@@ -1036,7 +1021,6 @@ void iMemCopyBootCode()
 	//delete arom;
 	dst+=512*256;
 
-	theApp.LogMessage("about to load theApp.m_ARom6");
 	arom=NULL;
 	arom=fopen(theApp.m_ARom6,"rb");
 	fread(dst,512*1024, 1, arom);
@@ -1044,7 +1028,6 @@ void iMemCopyBootCode()
 	//delete arom;
 	dst+=512*256;
 
-	theApp.LogMessage("about to load theApp.m_ARom7");
 	arom=NULL;
 	arom=fopen(theApp.m_ARom7,"rb");
 	fread(dst,512*1024, 1, arom);
@@ -1052,7 +1035,7 @@ void iMemCopyBootCode()
 	//delete arom;
 	dst+=512*256;
 
-	theApp.LogMessage("about to load theApp.m_ARom8");
+	 
 	arom=NULL;
 	arom=fopen(theApp.m_ARom8,"rb");
 	fread(dst,512*1024, 1, arom);

@@ -48,8 +48,10 @@ Revision History:
 #define HEIGHT_2 240.f
  
 
-static WORD	IntermediateBuffer[100000];
- 
+static WORD*	IntermediateBuffer;
+WORD   ColorSwap[0x8000] = {0};
+void MakeColorSwap16BG();
+
 //-----------------------------------------------------------------------------
 // EGL initialization
 //-----------------------------------------------------------------------------
@@ -239,13 +241,14 @@ static GLuint s_tex;
 DWORD CurTime;
 DWORD StartTime=1;
 extern DWORD dynaVCount;
-extern bool iCpuResetVSYNC;
-WORD *ColorSwap;
-DWORD *ColorSwapD;
+extern bool iCpuResetVSYNC; 
 
 mmDisplay::mmDisplay()
 {
-	initEgl();
+	
+	IntermediateBuffer	= (WORD *)malloc((320 * 242 + 2) * sizeof(WORD));
+	IntermediateBuffer += 321;
+
 	 
 
 }
@@ -260,7 +263,7 @@ HRESULT mmDisplay::Open(
 	WORD Width,
 	WORD Height)
 {
-  
+	initEgl();
 	gladLoadGL();
 	
 	GLint vsh = createAndCompileShader(GL_VERTEX_SHADER, vertexShaderSource);
@@ -317,6 +320,7 @@ HRESULT mmDisplay::Open(
  	 
 	glUseProgram(s_program);
 	
+	MakeColorSwap16BG();
 	MakeScreenBuffer();
 	return(0);
  
@@ -350,90 +354,33 @@ void mmDisplay::EndScene()
  
 void MakeColorSwap16BG()
 {
-	ColorSwap=(WORD *)malloc(0x8000*sizeof(WORD));
-	WORD p,r,b,g;
-	for(WORD i=0;i<0x8000;i++)
-	{
-		r=i&0x1f;
-		g=i&0x3e0;
-		b=i&0x7c00;
-	/*	if(theApp.m_ScanLines)
-		{
-			r+=3;
-			if(r>0x1f) r=0x1f;
-			g+=(3<<5);
-			if(g>0x3e0) g=0x3e0;
-			b+=(3<<10);
-			if(b>0x7c00) b=0x7c00;
-		} */
+	WORD r, b, g;
+ 
+	for (WORD i = 0; i < 0x8000; i++) {
+		r = i & 0x001f;
+		g = i & 0x03e0;
+		b = i & 0x7c00;
 
-		p=g<<1;
-		p|=(r<<11);
-		p|=(b>>10);
-		ColorSwap[i]=p;
+		if (theApp.m_ScanLines) {
+			r += 3 <<  0; if (r > 0x001f) r = 0x001f;
+			g += 3 <<  5; if (g > 0x03e0) g = 0x03e0;
+			b += 3 << 10; if (b > 0x7c00) b = 0x7c00;
+		}
+
+		ColorSwap[i] = r << 11 | b >> 10 | g << 1;
 	}
 }
 
-void MakeColorSwap16()
-{
-	ColorSwap=(WORD *)malloc(0x8000*sizeof(WORD));
-	WORD p,r,b,g;
-	for(WORD i=0;i<0x8000;i++)
-	{
-		r=i&0x1f;
-		g=i&0x3e0;
-		b=i&0x7c00;
-	/*	if(theApp.m_ScanLines)
-		{
-			r+=3;
-			if(r>0x1f) r=0x1f;
-			g+=(3<<5);
-			if(g>0x3e0) g=0x3e0;
-			b+=(3<<10);
-			if(b>0x7c00) b=0x7c00;
-		} */
-
-		p=g;
-		p|=(r<<10);
-		p|=(b>>10);
-		ColorSwap[i]=p|0x8000;
-	}
-}
-
-void MakeColorSwap32()
-{
-	ColorSwapD=(DWORD *)malloc(0x8000*sizeof(DWORD));
-	DWORD p,r,b,g;
-	for(WORD i=0;i<0x8000;i++)
-	{
-		r=i&0x1f;
-		g=i&0x3e0;
-		b=i&0x7c00;
-	/*	if(theApp.m_ScanLines)
-		{
-			r+=3;
-			if(r>0x1f) r=0x1f;
-			g+=(3<<5);
-			if(g>0x3e0) g=0x3e0;
-			b+=(3<<10);
-			if(b>0x7c00) b=0x7c00;
-		} */
-
-		p=g<<6;
-		p|=(r<<19);
-		p|=(b>>7);
-		ColorSwapD[i]=p;
-	}
-	ColorSwap=(WORD *)ColorSwapD;
-}
-
-void mmDisplay::UpdateScreenBuffer(char *source,WORD Depth)
+void mmDisplay::UpdateScreenBuffer(unsigned char *source)
 {
  
-	m_FrameCount++;
-	 
-	WORD	*dst	= IntermediateBuffer;
-	WORD	*hold;
+	//svcOutputDebugString("UpdateScreenBuffer",20);
+	
+	m_FrameCount++; 
+	
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	WORD	*dst = IntermediateBuffer;	 
 	DWORD p1, p2;
  
 	for (int y = 240; y > 0; y--) {
@@ -446,8 +393,8 @@ void mmDisplay::UpdateScreenBuffer(char *source,WORD Depth)
 			*(dst++) = ColorSwap[p2];
 		}
 	}
- 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 640, 484, 0, GL_BGRA, GL_UNSIGNED_SHORT_5_6_5, IntermediateBuffer);	
+	 
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 320, 240, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, IntermediateBuffer);	
 	
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

@@ -43,7 +43,7 @@ WORD ataDriveID[6]={0,0x5354,0x3931,0x3530,0x4147,0x2020};
 WORD ataDriveID[6];
 
 #define MIRRORn
-#define VERBOSE
+//#define VERBOSE
 
 void iATAConstruct()
 {

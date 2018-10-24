@@ -172,7 +172,7 @@ void BootKI1(void)
 	theApp.m_FrameDelay	= (DWORD)(1000.f / 60.f + .3f);
 	theApp.m_VTraceInc	= 49999980 / 60;
  
-	gAllowHLE	= false;
+	gAllowHLE	= true;
 	bQuitSignal	= false;
 
 	strcpy(theApp.m_HDImage, "ki.img");

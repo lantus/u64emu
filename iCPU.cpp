@@ -19,9 +19,11 @@
 #include "iIns.h"			// instruction pointer arrays
 
 
+
 #include "hleMain.h"
 #include "hleDSP.h"
- 
+
+//#include "Debugger.h"
 #include "adsp2100.h"
 
 //#pragma optimize("",off)
@@ -51,7 +53,6 @@ bool iCpuResetVSYNC=false;
 bool dump=false;
 DWORD Watch[64];
 DWORD dspCount=0;
-
 extern bool hleFMVDelay;
 DWORD lagging=0;
 
@@ -140,9 +141,8 @@ void iCpuReset()
 
 UINT8 iDspThreadProc()
 {
-	//Sleep(1000);
-	svcOutputDebugString("iDspThreadProc()", 20);
-	 
+	svcOutputDebugString("starting iDspThreadProc()", 40);
+	svcSleepThread(1000);
 	DWORD tmp,tmp2;
 	tmp=tmp2=0;
 #define FULL_HLE
@@ -164,6 +164,7 @@ UINT8 iDspThreadProc()
 				hleDSPMain2();
 
 				if(hleDSPPingTime==0) hleDSPPingTime=armGetSystemTick ()+7;
+				if(hleDSPPingTime==0) hleDSPPingTime=armGetSystemTick()+7;
 				WORD tmp=*(WORD *)&m->dspDMem[0x60c*2];
 				if(tmp==0x400)
 				{
@@ -172,10 +173,10 @@ UINT8 iDspThreadProc()
 					tmp=0x4f0;
 					dspUpdateCount++;
 					theApp.m_EmuObj->UpdateAudio(0x400);
-					diff=hleDSPPingTime-armGetSystemTick ();
+					diff=hleDSPPingTime-armGetSystemTick();
 					if(diff>0)
 					{
-						//Sleep(diff);
+						svcSleepThread(diff);
 						hleDSPPingTime+=7;
 					}
 					else
@@ -192,7 +193,7 @@ UINT8 iDspThreadProc()
 					diff=hleDSPPingTime-armGetSystemTick();
 					if(diff>0)
 					{
-						//Sleep(diff);
+						svcSleepThread(diff);
 						hleDSPPingTime+=8;
 					}
 					else
@@ -207,7 +208,7 @@ UINT8 iDspThreadProc()
 			}
 		case 0xff:
 			{
-				//Sleep(1000);
+				svcSleepThread(1000);
 				break;
 			}
 		}
@@ -219,8 +220,12 @@ UINT8 iDspThreadProc()
 		{
 		case ERROR_BREAK:
 			{
-				svcOutputDebugString("iDspThreadProc() : ERROR_BREAK", 40); 
-				DspTask=EXIT_EMU;
+				if(theApp.m_EmuObj->m_Debug)
+				{
+					DspTask=DEBUG_STEPMODE;
+				}
+				else
+					DspTask=EXIT_EMU;
 				break;
 			}
 		case DEBUG_SINGLESTEP:
@@ -443,7 +448,7 @@ UINT8 iDspThreadProc()
 						diff=hleDSPPingTime-armGetSystemTick();
 						if(diff>0)
 						{
-							//Sleep(diff);
+							svcSleepThread(diff);
 							hleDSPPingTime+=7;
 						}
 						else
@@ -461,7 +466,7 @@ UINT8 iDspThreadProc()
 						diff=hleDSPPingTime-armGetSystemTick();
 						if(diff>0)
 						{
-							//Sleep(diff);
+							svcSleepThread(diff);
 							hleDSPPingTime+=7;
 						}
 						else
@@ -492,7 +497,7 @@ UINT8 iDspThreadProc()
 						diff=hleDSPPingTime-armGetSystemTick();
 						if(diff>0)
 						{
-							//Sleep(diff);
+							svcSleepThread(diff);
 							hleDSPPingTime+=7;
 						}
 						else
@@ -510,7 +515,7 @@ UINT8 iDspThreadProc()
 						diff=hleDSPPingTime-armGetSystemTick();
 						if(diff>0)
 						{
-							//Sleep(diff);
+							svcSleepThread(diff);
 							hleDSPPingTime+=7;
 						}
 						else
@@ -525,8 +530,21 @@ UINT8 iDspThreadProc()
 				}
 				adsp2100_execute(1);
 #endif
- 
-				 
+
+				if(DspTask==DEBUG_SINGLESTEP)
+					DspTask=DEBUG_STEPMODE;
+
+				if(theApp.m_EmuObj->m_Debug)
+				{
+					if(m_Debugger->CheckBPDSP(pc))
+					{
+						DspTask=DEBUG_STEPMODE;
+						DWORD tmp=0;
+						if(pc>0x100)
+							tmp=pc-0x100;
+						m_Debugger->BreakDSP(tmp);
+					}
+				}
 /*
 */
 				break;
@@ -538,17 +556,28 @@ UINT8 iDspThreadProc()
 
 UINT8 iCpuThreadProc()
 {
-	 
-	svcOutputDebugString("iCpuThreadProc()", 20);
-	
+	svcOutputDebugString("starting iCpuThreadProc()", 40);
+	svcSleepThread(1000);
 	while(1)
 	{
 		switch(NewTask)
 		{
 		case ERROR_BREAK:
 			{
-				svcOutputDebugString("iCpuThreadProc() : ERROR_BREAK", 40);
-				NewTask=EXIT_EMU;
+				if(theApp.m_EmuObj->m_Debug)
+				{
+					NewTask=DEBUG_STEPMODE;
+					if((r->PC&0xff000000)==0x88000000)
+					{
+	
+					}
+					else
+					{
+	
+					}
+				}
+				else
+					NewTask=EXIT_EMU;
 				break;
 			}
 		case DEBUG_BREAK:
@@ -571,19 +600,17 @@ UINT8 iCpuThreadProc()
 		case EXIT_EMU:
 			{
 				NewTask=0;
-				//ExitThread(0); //TODO:FIX
+				//ExitThread(0); TODO:FIX
 				break;
 			}
 		case BOOT_STAGE0:
 			{
-								 			
 				if((r->PC&0xff000000)==0x88000000)
 					iOpCode=*(DWORD *)&m->rdRam[r->PC&MEM_MASK];
 				else
 					iOpCode=*(DWORD *)&rom->Image[r->PC&0x7ffff];
 				r->PC+=4;
 //				r->ICount++;
-				 
 				iMain[iOpCode>>26]();
 				r->GPR[0]=0;
 				r->GPR[1]=0;
@@ -605,7 +632,10 @@ UINT8 iCpuThreadProc()
 						break;
 					}
 				}
-				
+				if(theApp.m_EmuObj->m_Debug)
+				{
+ 
+				}
 /*
 */
 				break;
@@ -614,7 +644,6 @@ UINT8 iCpuThreadProc()
 		case DEBUG_FASTSTEP:
 		case NORMAL_GAME:
 			{
- 	 
 /*
 				DWORD test=iOpCode>>26;
 				BYTE rd,rs,rt,sa;
@@ -684,19 +713,18 @@ UINT8 iCpuThreadProc()
 					if(!dump)
 					{
 						dump=true;
-						fstream *tmpf=(fstream *)new fstream();
+						FILE *tmpf=NULL;
 						if(gRomSet==KI2)
 						{
-							tmpf->open("ki2.dat", ios::in | ios::out | ios::binary);
+							tmpf=fopen("ki2.dat","wb");
 						}
 						else if(gRomSet==KI1)
 						{
-							tmpf->open("ki.dat",ios::in | ios::out | ios::binary);
+							tmpf=fopen("ki.dat","wb");
 						}
-						tmpf->write((char *)m->rdRam,0x100000);
-						tmpf->write((char *)r,sizeof(RS4300iReg));
-						tmpf->close();
-						delete tmpf;
+						fwrite(m->rdRam,0x100000, 1, tmpf);
+						fwrite(r,sizeof(RS4300iReg),1, tmpf);
+						fclose(tmpf);
 					}
 				}
 				else
@@ -734,7 +762,11 @@ UINT8 iCpuThreadProc()
 SkipInterpreter:
 
 //				if((r->PC&0x7fffff)==0x29f90) NewTask=ERROR_BREAK;
-				 
+
+				if(theApp.m_EmuObj->m_Debug)
+				{
+ 
+				}
 /*
 */
 
@@ -872,14 +904,14 @@ void iCpuVSYNC()
 			lagging=0;
 			if(diff>0)
 			{
-				//Sleep(diff);
+				svcSleepThread(diff);
 			}
 		}
 		else
 		{
 			if(diff>0)
 			{
-				//Sleep(diff);
+				svcSleepThread(diff);
 			}
 			else if(diff<-theApp.m_FrameDelay)
 				lagging=1;
@@ -901,13 +933,12 @@ void iCpuVSYNC()
 		r->VTraceCount+=(theApp.m_VTraceInc);
 		r->NextIntCount=r->VTraceCount;
 		
-		/* TODO:FIX
-		dynaVCount++;
+		//dynaVCount++;
+		
 		if(gRomSet==KI2)
 			hleISR2();
 		else if(gRomSet==KI1)
 			hleISR();
-		*/
 /*
 			r->CPR0[2*CAUSE] |= 0x8000;
 
@@ -947,152 +978,13 @@ void iCpuCheckVSYNC()
 
 void iCpuSetFPUFlag()
 {
-	return;
-	DWORD op3=*(DWORD *)&m->rdRam[0x180];
-	DWORD Address;
-	if((op3&0xff000000)==0x3c000000)
-	{
-		short op4=*(WORD *)&m->rdRam[0x184];
-		Address=(((DWORD)op3<<16)+op4);
-		DWORD *patch=(DWORD *)&m->rdRam[Address&MEM_MASK];
-		DWORD a0=patch[0x38/4];
-		DWORD a1=patch[0x38/4+1];
-		a0=((a0&0xffff)<<16)+(short)(a1&0xffff);
-		DWORD *thread=(DWORD *)&m->rdRam[a0&MEM_MASK];
-		thread[6]=0xffffffff;
-	}
+	return;	 
 }
 
 void iCpuCheckInts()
 {
 	return;
-
-	if(iCpuNextVSYNC==0)
-		iCpuNextVSYNC=armGetSystemTick()+16;
-	if(theApp.m_LockOn)
-	{
-		int diff=(iCpuNextVSYNC-armGetSystemTick());
-		if(diff>0)
-		{
-//			Sleep(diff);
-			return;
-		}
-/*
-		if(dspUpdateCount)
-			while(dspUpdateCount%32)
-			{
-				Sleep(1);
-			}
-*/
-		iCpuNextVSYNC+=16;
-		iCpuVSYNCAccum+=40;
-		if(iCpuVSYNCAccum>60)
-		{
-			iCpuNextVSYNC+=1;
-			iCpuVSYNCAccum-=60;
-		}
-	}
-//	if((r->NextIntCount <= r->ICount)) //&&!r->DoOrCheckSthg) 
-	{
-		r->ICount=r->NextIntCount;
-		r->VTraceCount+=(833333);
-		r->NextIntCount=r->VTraceCount;
-		dynaVCount++;
-		hleISR();
-	}
-	return;
-
-	if(r->Delay!=NO_DELAY)
-		return;
-
-	if((r->NextIntCount <= r->ICount)) //&&!r->DoOrCheckSthg) 
-	{
-//		if(((r->NextIntCount & 0xffffffff) == r->CompareCount)&&(r->CompareCount))
-//		if((r->CompareCount)&&(r->CompareCount<r->ICount))
-		{
-//			r->NextIntCount=r->CompareCount+625000;
-			r->ICount=r->NextIntCount;
-			r->CompareCount=0;
-			r->VTraceCount+=(833333);
-			r->NextIntCount=r->VTraceCount;
-
-			/* set IP7 in CAUSE reg */
-			r->CPR0[2*CAUSE] |= 0x8000;
-
-			/* if IP7 or IE bits in STATUS reg are clr: return */
-			if((r->CPR0[2*STATUS] & 0x8001) != 0x8001)
-			{
-		//		r->DoOrCheckSthg &= ~CHECK_MI_INTERRUPTS;
-				return;
-			}
-
-			/* if EXL or ERL bits in status reg are set: return */
-			if(r->CPR0[2*12] & 0x0006)
-					return;
-
-			/* set ExcCode to Int (0) */
-			r->CPR0[2*CAUSE] &= ~EXC_CODE__MASK;
-
-			r->CPR0[2*STATUS] |= 0x00000002;              
-			r->CPR0[2*EPC]  = r->PC;                  
-
-			if(r->Delay == EXEC_DELAY)
-			{
-					r->CPR0[2*CAUSE] |= 0x80000000;       
-					r->CPR0[2*EPC]   -= 4;                
-
-			} 
-			else
-			{
-					r->CPR0[2*CAUSE] &= ~0x80000000;      
-			}
-
-//			NewTask=ERROR_BREAK;
-			r->PC = 0x88000180;                           
-			r->Delay = NO_DELAY;                          
-			r->Break=r->Lo;
-			r->LastPC=r->Hi;
-/*
-*/
-//			NewTask=ERROR_BREAK;
-			return;
-		}
-/*
-//		if(((DWORD *)m->aiReg)[1])
-		{
-			aiUsed+=aiUsedW;
-			aiUsedA+=aiUsedF;
-//			((DWORD *)m->aiReg)[1]-=(aiUsedW/2);
-			if(aiUsedA>60)
-			{
-				aiUsed+=aiUsedW;
-//				((DWORD *)m->aiReg)[1]-=(aiUsedW/2);
-				aiUsedA-=60;
-			}
-			if(aiUsed>(aiBufLen/4))
-			{
-				aiUsed-=(aiBufLen/4);
-//				aiDataUsed+=aiBufLen;
-				r->DoOrCheckSthg|=MI_INTR_AI;
-				((DWORD *)m->aiReg)[3] = 0x0000000;		// we are now not busy
-				((DWORD *)m->aiReg)[1] = 0x0000000;		// we are now not busy
-//				return;
-			}
-		}
-*/
-/*
-		r->NextIntCount=r->ICount+(833333);
-		r->NextIntCount&=0xffffffff;
-		if(r->NextIntCount<r->ICount)
-			r->ICount=0;
-		r->VTraceCount=r->NextIntCount;
-		if(((r->NextIntCount&0xffffffff)>r->CompareCount)&&(r->CompareCount))
-		{
-			r->NextIntCount&=0xffffffff00000000;
-			r->NextIntCount|=(DWORD)r->CompareCount;
-		}
-*/
-	}
+ 
 }
 
 
@@ -1201,8 +1093,9 @@ void iOpTne()
 
 void iOpCache()
 {
-//	return;
+	return;
 
+#ifndef __SWITCH	
 	DWORD op=MAKE_RT;
 	DWORD Page,Offset;
 	DWORD Address=(sDWORD)(r->GPR[MAKE_RS*2] + MAKE_I);
@@ -1210,15 +1103,11 @@ void iOpCache()
 //	if(op==0)
 //	theApp.BPMessage("Cache %X %X",op,Address);
 
-
 	if((op&1)==0) //instruction cache
 	{
 		Page=  (Address&0x003fc000)>>14;
 		Offset=(Address&0x00003ffc)>>2;
-		
-		
-#ifdef DYNAREC		
-		if((dynaPageTable[Page].Ofsfset[Offset]!=NULL))
+		if((dynaPageTable[Page].Offset[Offset]!=NULL))
 		{
 	//		dynaInvalidate(Address,16);
 			dynaPageTable[Page].Value[Offset]=0;
@@ -1226,8 +1115,8 @@ void iOpCache()
 			dynaPageTable[Page].Value[Offset+2]=0;
 			dynaPageTable[Page].Value[Offset+3]=0;
 		}
-#endif		
 	}
+#endif	
 }
 
 void iOpTgei()
@@ -1305,7 +1194,6 @@ void iCpuLoadGame()
 	r->PC|=0x88000000;
 	//dynaInit();
 }
-
 
 void iCpuCreateThreadHeader()
 {
