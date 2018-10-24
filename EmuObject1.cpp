@@ -263,8 +263,11 @@ void CEmuObject::Emulate(char *filename)
 
 	iMainConstruct((char *)m_FileName);
 	iRomReadImage((char *)m_FileName);
+	theApp.LogMessage("about to iMemCopyBootCode()");
 	iMemCopyBootCode();
+	theApp.LogMessage("about to iMainReset()");
 	iMainReset();
+	theApp.LogMessage("about to iMainStartCPU()");
 	iMainStartCPU();
 
  

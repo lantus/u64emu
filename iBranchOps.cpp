@@ -72,9 +72,95 @@ void iOpJal()
 {
 #ifdef CHECK_BRANCH_IN_BRANCH
 	if(CheckBranchInBranch()) return;
- 
 #endif
- 
+	DWORD target=MAKE_T;
+/*
+	if(target==0x83C00DEC)
+	{
+		theApp.LogMessage("?? V0:%08x S0:%08x S1:%08X S2:%08X",r->GPR[2*2],r->GPR[32],r->GPR[34],r->GPR[36]);
+	}
+	else
+	{
+		theApp.LogMessage("JAL %X at %X",target,r->PC);
+	}
+*/
+	//if(logJAL)
+	//{
+		//theApp.LogMessage("JAL %X\r\n",target);
+	//}
+	if((target&0x3fffff)==0x30ccc)
+	{
+		theApp.LogMessage("hleWriteBlock");
+		//hleWriteBlock();
+		return;
+	}
+	if((target&0x3fffff)==0x3108c)
+	{
+		theApp.LogMessage("hleBuildBG");
+		//hleBuildBG();
+		return;
+	}
+/*
+	if((target&0x3fffff)==0x12CC4)
+	{
+		char peek[64];
+		DWORD a0=r->GPR[8];
+		memcpy(peek,&m->rdRam[a0&0x7fffff],63);
+		return;
+	}
+*/
+	if((target&0x3fffff)==0x1FC01)
+	{
+		iCpuDoNextOp();
+
+		char peek[64];
+		DWORD a1=r->GPR[10];
+		int count=*(int *)&m->rdRam[a1&0x7fffff];
+		DWORD tmp;
+		DWORD a0;
+		while(count>0)
+		{
+			a1+=4;
+			tmp=*(DWORD *)&m->rdRam[a1&0x7fffff];
+			tmp+=6;
+			count--;
+			memcpy(peek,&m->rdRam[tmp&0x7fffff],63);
+		}
+//		return;
+	}
+
+/*
+	if((target&0x3fffff)==0x1FD20)
+	{
+		char peek[64];
+		DWORD a0=r->GPR[6];
+		a0+=6;
+		memcpy(peek,&m->rdRam[a0&0x7fffff],63);
+		a0++;
+//		return;
+	}
+*/
+/*
+	if((target&0x3fffff)==0x18c34)
+	{
+		return;
+	}
+*/
+	if(target==0x88029f85)
+	{
+		DWORD delay;
+		DWORD start;
+		delay=*(DWORD *)&m->rdRam[0x8f5b4];
+		start=*(DWORD *)&m->rdRam[0x8f5bc];
+		r->ICount=start+delay;
+		r->PC+=4;
+	}
+	else
+	{
+		r->Delay = DO_DELAY;
+		r->PCDelay = MAKE_T;
+		r->GPR[31*2] = (sQWORD) (sDWORD) (r->PC+LINK_OFFSET);
+	}
 }
 
 void iOpBeq()

@@ -141,6 +141,8 @@ void iCpuReset()
 UINT8 iDspThreadProc()
 {
 	//Sleep(1000);
+	svcOutputDebugString("iDspThreadProc()", 20);
+	 
 	DWORD tmp,tmp2;
 	tmp=tmp2=0;
 #define FULL_HLE
@@ -217,7 +219,7 @@ UINT8 iDspThreadProc()
 		{
 		case ERROR_BREAK:
 			{
-				 
+				svcOutputDebugString("iDspThreadProc() : ERROR_BREAK", 40); 
 				DspTask=EXIT_EMU;
 				break;
 			}
@@ -536,14 +538,16 @@ UINT8 iDspThreadProc()
 
 UINT8 iCpuThreadProc()
 {
-	//Sleep(1000);
+	 
+	svcOutputDebugString("iCpuThreadProc()", 20);
+	
 	while(1)
 	{
 		switch(NewTask)
 		{
 		case ERROR_BREAK:
 			{
-				
+				svcOutputDebugString("iCpuThreadProc() : ERROR_BREAK", 40);
 				NewTask=EXIT_EMU;
 				break;
 			}
@@ -572,12 +576,14 @@ UINT8 iCpuThreadProc()
 			}
 		case BOOT_STAGE0:
 			{
+								 			
 				if((r->PC&0xff000000)==0x88000000)
 					iOpCode=*(DWORD *)&m->rdRam[r->PC&MEM_MASK];
 				else
 					iOpCode=*(DWORD *)&rom->Image[r->PC&0x7ffff];
 				r->PC+=4;
 //				r->ICount++;
+				 
 				iMain[iOpCode>>26]();
 				r->GPR[0]=0;
 				r->GPR[1]=0;
@@ -608,6 +614,8 @@ UINT8 iCpuThreadProc()
 		case DEBUG_FASTSTEP:
 		case NORMAL_GAME:
 			{
+				
+				
 /*
 				DWORD test=iOpCode>>26;
 				BYTE rd,rs,rt,sa;
@@ -1264,29 +1272,41 @@ void test()
 
 void iCpuSaveGame()
 {
-	fstream *file=(fstream *)new fstream();
-	file->open("save.dat",ios::out | ios::binary);
+	char szFile[50];
+	
+	if (gRomSet==KI1)
+		sprintf(szFile,"KI1.dat");
+	else
+		sprintf(szFile,"KI2.dat");
+
+	FILE *file=NULL;
+	file=fopen(szFile,"wb");
 //	hleRdpEvictN64Textures();
 	iMemSave(file);
 	r->PC|=0x88000000;
-	file->write((char *)r,sizeof(RS4300iReg));
-
-	file->close();
-	delete file;
+	fwrite(r,sizeof(RS4300iReg),1,file);
+	fclose(file);
 }
 
 void iCpuLoadGame()
 {
-	fstream *file=(fstream *)new fstream();
-	file->open("save.dat",ios::out | ios::binary);
+	char szFile[50];
+	
+	if (gRomSet==KI1)
+		sprintf(szFile,"KI1.dat");
+	else
+		sprintf(szFile,"KI2.dat");
+
+	FILE *file=NULL;
+	file=fopen(szFile,"rb");
 //	hleRdpEvictN64Textures();
 	iMemLoad(file);
-	file->read((char *)r,sizeof(RS4300iReg));
-	file->close();
+	fread(r,sizeof(RS4300iReg),1,file);
+	fclose(file);
 	r->PC|=0x88000000;
 	//dynaInit();
-	delete file;
 }
+
 
 void iCpuCreateThreadHeader()
 {

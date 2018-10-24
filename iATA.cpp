@@ -13,8 +13,8 @@
 #include "iATA.h"			// ATA emulation
 
 
-fstream *ataFile;
-fstream *ataMFile;
+FILE *ataFile;
+FILE *ataMFile;
 DWORD ataHeads;		//num of heads per InitParams command
 DWORD ataSectors;	//num of sector per InitParams command
 
@@ -43,7 +43,7 @@ WORD ataDriveID[6]={0,0x5354,0x3931,0x3530,0x4147,0x2020};
 WORD ataDriveID[6];
 
 #define MIRRORn
-#define VERBOSEn
+#define VERBOSE
 
 void iATAConstruct()
 {
@@ -64,21 +64,13 @@ void iATADestruct()
 
 bool iATAOpen()
 {
-	bool result = false;
-	ataFile=(fstream *)new fstream();
-	ataFile->open(theApp.m_HDImage,ios::in|ios::out|ios::binary);
-	 
-	if (ataFile->is_open())
-	{
-		result = true;
-	}
+	ataFile=fopen(theApp.m_HDImage,"r+b");
 	
-
 #ifdef MIRROR
-	ataMFile=(fstream *)new fstream();
-	ataMFile->open("mirror.dat",ios::in | ios::out | ios::binary);
-	ataFile->read((char *)ataDataBuffer,1024);
-	ataMFile->write((char *)ataDataBuffer,1024);
+	ataMFile=(CFile *)new CFile();
+	ataMFile->Open("mirror.dat",CFile::modeReadWrite|CFile::modeCreate);
+	ataFile->Read(ataDataBuffer,1024);
+	ataMFile->Write(ataDataBuffer,1024);
 #endif
 
 	m->atReg[0x170]=0x48; //we be ready
@@ -108,15 +100,18 @@ bool iATAOpen()
 		}
 	}
 
-	return(result);
+	if (ataFile)
+		return true;
+	else
+		return false;
 }
 
 void iATAClose()
 {
-	ataFile->close();
-
+	fclose(ataFile);
+	 
 #ifdef MIRROR
-	ataMFile->close();
+	fclose(ataMFile);
 #endif
 
 }
@@ -204,7 +199,7 @@ void iATADriveIdentify()
 #endif
 	if(gRomSet==KI2)
 	{
-		memcpy(&ataDataBuffer[0x14/2],ataDriveID,sizeof(WORD)*6);
+		memcpy(&ataDataBuffer[/*0x14/2*/0x0a],ataDriveID,sizeof(WORD)*6);
 	}
 	else if(gRomSet==KI1)
 	{
@@ -247,8 +242,8 @@ void iATAReadSectors()
 	addy+=(ataHead*40);
 	addy*=512;
 	addy+=0xd;
-	ataFile->seekg(addy,ios::beg);
-	ataFile->read((char *)ataDataBuffer,ataSectorCount*512);
+	fseek(ataFile, addy, SEEK_SET);
+	fread(ataDataBuffer,ataSectorCount*512,1,ataFile);
 	ataTransferMode=0;
 	ataTargetLen=ataSectorCount*512;
 
@@ -256,7 +251,7 @@ void iATAReadSectors()
 //		NewTask=ERROR_BREAK;
 
 #ifdef MIRROR
-	ataMFile->write((char *)ataDataBuffer,ataSectorCount*512);
+	ataMFile->Write(ataDataBuffer,ataSectorCount*512);
 #endif
 
 #ifdef VERBOSE
@@ -287,7 +282,7 @@ void iATAWriteSectors()
 	addy+=(ataHead*40);
 	addy*=512;
 	addy+=0xd;
-	ataFile->seekg(addy,ios::beg);
+	fseek(ataFile,addy, SEEK_SET);
 //	ataFile->Write(ataDataBuffer,ataSectorCount*512);
 	ataTransferMode=1;
 
@@ -308,7 +303,7 @@ BYTE *iATADataRead()
 		{
 			if(ataTransferMode)
 			{
-				ataFile->write((char *)ataDataBuffer,ataSectorCount*512);
+				fwrite(ataDataBuffer,ataSectorCount*512,1,ataFile);
 #ifdef VERBOSE
 				theApp.LogMessage("ATA WriteData %d",ataTargetLen);
 #endif

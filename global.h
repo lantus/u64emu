@@ -19,14 +19,14 @@ typedef unsigned char						UINT8;
 typedef signed char 						INT8;
 typedef unsigned short						UINT16;
 typedef signed short						INT16;
-typedef unsigned long						UINT32;
-typedef signed long							INT32;
-typedef long long							INT64;
-typedef unsigned long long					UINT64; 
+typedef unsigned int						UINT32;
+typedef signed int							INT32;
+typedef int64_t								INT64;
+typedef uint64_t							UINT64; 
  
-typedef UINT8 BYTE;
-typedef UINT16 WORD;
-typedef UINT32 DWORD;
+typedef unsigned char BYTE;
+typedef unsigned short WORD;
+typedef unsigned int DWORD;
  
 #define _PI  3.14159265359f
 #define _PI2  6.28318530718f

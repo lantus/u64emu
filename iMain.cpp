@@ -95,32 +95,30 @@ void iMainStartCPU()
 	int dwThrdParam = 0;
 	unsigned long dwThreadId = 0;
 	NewTask=BOOT_STAGE0;
-	fstream *tmpf=(fstream *)new fstream();
-	bool results = false;
-
+	FILE *tmpf=NULL;
+	 
 	if(gRomSet==KI2)
-		tmpf->open("ki2.dat",ios::out | ios::in | ios::binary);
+		tmpf=fopen("ki2.dat","rb");
 	else if(gRomSet==KI1)
-		tmpf->open("ki.dat", ios::out | ios::in | ios::binary);
+		tmpf=fopen("ki.dat","rb");
 
-	if (tmpf->is_open())
-	{
-		results = true;
-	}
-	
 	dump=false;
-	if(results)
+	if(tmpf)
 	{
 //		iMemLoad(tmpf);
-		tmpf->read((char *)m->rdRam,0x100000);
-		tmpf->read((char *)r,sizeof(RS4300iReg));
-		tmpf->close();
+		fread(m->rdRam,0x100000, 1, tmpf);
+		fread(r,sizeof(RS4300iReg), 1, tmpf);
+		fclose(tmpf);
 //		r->PC=0x88000000;
 //		dynaInit();
 		NewTask=NORMAL_GAME;
 		dump=true;
 	}
-	delete tmpf;
+
+	if (tmpf)
+		fclose(tmpf);
+
+	//delete tmpf;
 	adsp2100_set_pc(0);
 	DspTask=NORMAL_GAME;
 //	if(theApp.m_EmuObj->m_Debug)
@@ -136,10 +134,12 @@ void iMainStartCPU()
 						tmpf->Close();
 						delete tmpf;
 */
-
-	threadCreate(&cpu_thread, (void (*)(void *))iCpuThreadProc, &dwThrdParam, STACKSIZE, 0x3B , 0);
-	threadCreate(&dsp_thread, (void (*)(void *))iDspThreadProc, &dwThrdParam, STACKSIZE, 0x3B , 1);
- 
+	 
+	threadCreate(&cpu_thread, (void (*)(void *))iCpuThreadProc, &dwThrdParam, STACKSIZE, 0x3B , 1);
+	threadStart(&cpu_thread);
+	threadCreate(&dsp_thread, (void (*)(void *))iDspThreadProc, &dwThrdParam, STACKSIZE, 0x3B , 2);
+	threadStart(&dsp_thread);
+  
 /*
 */
 } 

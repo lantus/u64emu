@@ -12,7 +12,7 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-#define RELEASE_BUILD
+//#define RELEASE_BUILD
 /////////////////////////////////////////////////////////////////////////////
 // CKIApp
  
@@ -59,12 +59,12 @@ void CKIApp::LogMessage(char *fmt, ...)
     vsprintf( ach, fmt, va );
     va_end( va );
 
-	ostream *LogFile=(ostream *)new ostream();
+	ofstream *LogFile=(ofstream *)new ofstream();
 	char filename[256];
 	sprintf(filename,"log.dat",m_Path);
 	LogFile->open(filename,ios::binary | ios::app);
 	 
-	LogFile->seekg(0,ios::end);
+	LogFile->seekp(0,ios::end);
 	LogFile->write((char *)ach,strlen(ach));
 	LogFile->write((char *)"\r\n",2);
 	LogFile->close();
@@ -172,7 +172,7 @@ void BootKI1(void)
 	theApp.m_FrameDelay	= (DWORD)(1000.f / 60.f + .3f);
 	theApp.m_VTraceInc	= 49999980 / 60;
  
-	gAllowHLE	= true;
+	gAllowHLE	= false;
 	bQuitSignal	= false;
 
 	strcpy(theApp.m_HDImage, "ki.img");
@@ -192,7 +192,6 @@ void BootKI1(void)
 	theApp.m_UCode = 0;
 
 	while (!bQuitSignal);
-
 	e.StopEmulation();
 	 
 }

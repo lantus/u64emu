@@ -21,10 +21,10 @@ typedef unsigned char						UINT8;
 typedef signed char 						INT8;
 typedef unsigned short						UINT16;
 typedef signed short						INT16;
-typedef unsigned long						UINT32;
-typedef signed long							INT32;
-typedef long long							INT64;
-typedef unsigned long long					UINT64;  
+typedef unsigned int						UINT32;
+typedef signed int							INT32;
+typedef int64_t								INT64;
+typedef uint64_t							UINT64; 
 
 
  

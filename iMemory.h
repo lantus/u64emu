@@ -31,9 +31,9 @@ void iMemUpdateMIReg();
 void iMemUpdateSPReg();
 void iMemUpdateDPReg();
 void iMemCopyBootCode();
-void iMemSave(fstream *tmp);
-void iMemLoad(fstream *tmp);
-void iMemLoadShort(fstream *tmp);
+void iMemSave(FILE *tmp);
+void iMemLoad(FILE *tmp);
+void iMemLoadShort(FILE *tmp);
 
 extern DWORD iMemWriteByteAddress;
 extern DWORD iMemWriteWordAddress;

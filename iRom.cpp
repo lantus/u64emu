@@ -10,7 +10,7 @@
 #include "iRom.h"			// Rom (cart) emulation routines
 
 WORD EndianChangeMode;
-ifstream *iRomFile;
+FILE *iRomFile;
 WORD iRomNumPages;
 #define ROM_PAGE_SIZE 0x20000  //128K
 BYTE *iRomPageMap;
@@ -29,8 +29,8 @@ void iRomDestruct()
 {
 	if(iRomFile)
 	{
-		iRomFile->close();
-		SafeDelete(iRomFile);
+		fclose(iRomFile);
+		//SafeDelete(iRomFile);
 	}
 	SafeFree(rom->Image);
 	SafeFree(rom);
@@ -40,23 +40,24 @@ void iRomDestruct()
 
 int iRomReadImage(char *filename)
 {   
-	ifstream *in;
+	FILE *in;
     BYTE    endian_1;
     BYTE    endian_2;
     BYTE    endian_3;
     BYTE    endian_4;
    
 
-	iRomFile=(ifstream *)new ifstream();
+	iRomFile=NULL;
 	in=iRomFile;
-	in->open(filename, ios::binary);
-	if(!in->is_open())
+	in=fopen(filename,"rb");
+	if(!in)
 	{
-		theApp.ErrorMessage("Failed to open rom image file %s",filename);
-		delete in;
+		//theApp.ErrorMessage("Failed to open rom image file %s",filename);
+		//delete in;
 		return(-1);
 	}
-	rom->Length=in->tellg();
+	fseek(in,0,SEEK_END);
+	rom->Length=ftell(in);
 	rom->Length/=ROM_PAGE_SIZE;
 	rom->Length++;
 	rom->Length*=ROM_PAGE_SIZE;
@@ -64,9 +65,10 @@ int iRomReadImage(char *filename)
 	rom->Image=(BYTE *)malloc((size_t)rom->Length);
 	if(rom->Image==NULL)
 	{
-		theApp.ErrorMessage("Malloc error for RomImage - length %d",rom->Length);
-		in->close();
-		delete in;
+		//theApp.ErrorMessage("Malloc error for RomImage - length %d",rom->Length);
+		fclose(in);
+		//in->Close();
+		//delete in;
 		return(-1);
 	}
 	rom->Header=rom->Image;
@@ -101,8 +103,9 @@ int iRomReadImage(char *filename)
 */
 	EndianChangeMode=2;
 
-	in->seekg (0, ios::beg);
-	in->read((char *)rom->Image,rom->Length);
+	fseek(in,0,SEEK_SET);
+	fread(rom->Image,rom->Length,1,in);
+	long length=ftell(in);
 	if(EndianChangeMode!=2)
 		iRomChangeRomEndian(EndianChangeMode,rom->Length);
 //	in->Close();
@@ -147,13 +150,14 @@ int iRomReadImage(char *filename)
     rom->Info.CartridgeId          = *(WORD *)(rom->Header + (0x3c ^ 0x03));
     rom->Info.CountryCode          = *(BYTE *) (rom->Header + (0x3e ^ 0x03));
     rom->Info.Unknown10            = *(BYTE *) (rom->Header + (0x3f ^ 0x03));
-    rom->PrgCodeBaseOrig = rom->Info.ProgramCousnter;
+    rom->PrgCodeBaseOrig = rom->Info.ProgramCounter;
     rom->PrgCodeBase = rom->PrgCodeBaseOrig & 0x1fffffff;
 */   
 	if(iRomFile)
 	{
-		iRomFile->close();
-		SafeDelete(iRomFile);
+		fclose(iRomFile);
+		//iRomFile->Close();
+		//SafeDelete(iRomFile);
 	}
 
 	return(0);
@@ -162,21 +166,19 @@ int iRomReadImage(char *filename)
 
 int iRomReadHeader(char *filename)
 {   
-	ifstream *in;
+	FILE *in;
     BYTE    endian_1;
     BYTE    endian_2;
     BYTE    endian_3;
     BYTE    endian_4;
    
-
-	in=(ifstream *)new ifstream();
-	in->open(filename,ios::binary);
-	if(!in->is_open())
+	in=fopen(filename,"rb");
+	if(!in)
 	{
-		delete in;
 		return(-1);
 	}
-	rom->Length=in->tellg();
+	fseek(in,0,SEEK_END);
+	rom->Length=ftell(in);
 	rom->PrgCodeLength=rom->Length-0x1000;
 	rom->Image=(unsigned char *)malloc(0x40);
 	rom->Header=rom->Image;
@@ -185,10 +187,11 @@ int iRomReadHeader(char *filename)
 
 	WORD EndianChangeMode;
 
-	in->read((char *)&endian_1,1);
-	in->read((char *)&endian_2,1);
-	in->read((char *)&endian_3,1);
-	in->read((char *)&endian_4,1);
+	fread(&endian_1,1,1, in);
+	fread(&endian_2,1,1, in);
+	fread(&endian_3,1,1, in);
+	fread(&endian_4,1,1, in);
+
 	if( (endian_1==0x37)&&(endian_2==0x80) )
 	{
 		EndianChangeMode=0;
@@ -203,16 +206,26 @@ int iRomReadHeader(char *filename)
 	}
 	else
 	{
-		in->close();
-		delete in;
+		fclose(in);
+		//in->Close();
+		//delete in;
 		return(-2);
 	}
 
-	in->seekg(0,ios::beg);
-	in->read((char *)rom->Image,0x40);	 
-	 
-	in->close();
-	delete in;
+	fseek(in,0,SEEK_SET);
+	int length=fread(rom->Image,0x40,1,in);
+
+	if(length!=0x40)
+	{
+		fclose(in);
+		//in->Close();
+		//delete in;
+        return(-1);
+	}
+
+	fclose(in);
+	//in->Close();
+	//delete in;
    
 
 	if(EndianChangeMode!=2)
@@ -326,8 +339,10 @@ void iRomReadPage(WORD PageNum)
 	theApp.LogMessage("Reading page %d",PageNum);
 
 	DWORD Offset=PageNum*ROM_PAGE_SIZE;
-	iRomFile->seekg(Offset,ios::beg);
-	iRomFile->read((char *)rom->Image+Offset,ROM_PAGE_SIZE);
+	fseek(iRomFile,Offset,SEEK_SET);
+	fread(rom->Image+Offset,ROM_PAGE_SIZE,1,iRomFile);
+	//iRomFile->Seek(Offset,CFile::begin);
+	//iRomFile->Read(rom->Image+Offset,ROM_PAGE_SIZE);
 	iRomPageMap[PageNum]=1;
 	if(EndianChangeMode!=2)
 		iRomChangeRomEndianEx(EndianChangeMode,ROM_PAGE_SIZE,Offset);

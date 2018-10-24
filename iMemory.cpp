@@ -1,6 +1,5 @@
 
 #include "stdafx.h"
- 
 #include "math.h"
 #include "ki.h"
 
@@ -14,8 +13,6 @@
 
 #include "adsp2100.h"
 #include "hleDSP.h"
-
-#include <cstring>
 
 #define DO_NOTHING              0x0000
 #define DO_DISPLAY_REFRESH      0x0001
@@ -35,10 +32,10 @@
 #define PI_DMA_READ             0x4000
 #define ATA_UPDATE				0x8000
 
-#define LOG_STUFFn
+#define LOG_STUFF
 //extern QWORD ICount,NextIntCount;
 #define LOG_ERRORS
-#define LOG_TLBn
+//#define LOG_TLBn
 #define HLE_DSP
 
 //#define DOINDIAN
@@ -135,14 +132,14 @@ void iMemConstruct()
 	iMemInit();
 	iMemClear();
 
-	iMemWriteByteAddress=(DWORD)iMemWriteByte;
-	iMemWriteWordAddress=(DWORD)iMemWriteWord;
-	iMemWriteDWordAddress=(DWORD)iMemWriteDWord;
-	iMemWriteQWordAddress=(DWORD)iMemWriteQWord;
-	iMemReadByteAddress=(DWORD)iMemReadByte;
-	iMemReadWordAddress=(DWORD)iMemReadWord;
-	iMemReadDWordAddress=(DWORD)iMemReadDWord;
-	iMemReadQWordAddress=(DWORD)iMemReadQWord;
+	iMemWriteByteAddress=(unsigned long)iMemWriteByte;
+	iMemWriteWordAddress=(unsigned long)iMemWriteWord;
+	iMemWriteDWordAddress=(unsigned long)iMemWriteDWord;
+	iMemWriteQWordAddress=(unsigned long)iMemWriteQWord;
+	iMemReadByteAddress=(unsigned long)iMemReadByte;
+	iMemReadWordAddress=(unsigned long)iMemReadWord;
+	iMemReadDWordAddress=(unsigned long)iMemReadDWord;
+	iMemReadQWordAddress=(unsigned long)iMemReadQWord;
 
 	iATAConstruct();
 	iATAOpen();
@@ -284,7 +281,7 @@ BYTE *iMemPhysReadAddr(DWORD VAddr)
 			{
 			case 0x80:
 				{
-//					DWORD tmp=~theApp.m_EmuObj->m_InputDevice->MultiScan(inputs);
+ 	//				DWORD tmp=~theApp.m_EmuObj->m_InputDevice->MultiScan(inputs);
 					if(gRomSet==KI2)
 					{
 						inputs[2]&=~2;
@@ -401,8 +398,8 @@ BYTE *iMemPhysReadAddr(DWORD VAddr)
 //	iCpuStepDSP();
 	return m->NullMem;
 } 
-
-
+extern bool framespeed;
+//int doframe=0;
 BYTE *iMemPhysWriteAddr(DWORD VAddr)
 {
 //	iCpuStepDSP();
@@ -488,9 +485,12 @@ BYTE *iMemPhysWriteAddr(DWORD VAddr)
 				{
 					case 0x98:	//page flip register?
 						{
+/*							doframe++;
+							if (doframe==59) doframe=0;
+							if (doframe%2==0){**/
 							iCpuVSYNC();
-							theApp.m_EmuObj->UpdateDisplay();
-							//DWORD tmp=~theApp.m_EmuObj->m_InputDevice->MultiScan(inputs);
+						/*	theApp.m_EmuObj->UpdateDisplay();
+							DWORD tmp=~theApp.m_EmuObj->m_InputDevice->MultiScan(inputs);//} TODO:FIX */
 							*(DWORD *)&m->aiReg[0x98]=inputs[1]&0xffff;
 							*(DWORD *)&m->aiReg[0x90]=inputs[0]&0xffff;
 							break;
@@ -502,7 +502,7 @@ BYTE *iMemPhysWriteAddr(DWORD VAddr)
 						}
 					case 0x80:
 						{
-	#ifndef HLE_DSP
+/*	#ifndef HLE_DSP
 							if(cheat&0x2)
 								adsp2105_set_irq_line(ADSP2105_IRQ2, 0);
 							else
@@ -510,17 +510,17 @@ BYTE *iMemPhysWriteAddr(DWORD VAddr)
 								dspIRQClear=0;
 								adsp2105_set_irq_line(ADSP2105_IRQ2, 1);
 							}
-	#else
+	#else*/
 							dspIRQClear=1;
-	#endif
+//	#endif
 							break;
 						}
 					case 0xA0:
 						{
 							dspPeek=cheat;
-	#ifdef HLE_DSP
+//	#ifdef HLE_DSP
 							hleDSPIntService();
-	#endif
+//	#endif
 							break;
 						}
 					case 0x100:
@@ -559,11 +559,17 @@ BYTE *iMemPhysWriteAddr(DWORD VAddr)
 				{
 					case 0x80:	//page flip register?
 						{
-							iCpuVSYNC();
+/* TODO:FIX							
+if  (framespeed){
+	theApp.m_framesToSkip = 2;}
+else {
+	theApp.m_framesToSkip = 0;
+	iCpuVSYNC();}
 							theApp.m_EmuObj->UpdateDisplay();
-							//DWORD tmp=~theApp.m_EmuObj->m_InputDevice->MultiScan(inputs);
-							break;
 
+							DWORD tmp=~theApp.m_EmuObj->m_InputDevice->MultiScan(inputs);
+							break;
+*/
 						}
 					case 0x88:
 						{
@@ -571,7 +577,7 @@ BYTE *iMemPhysWriteAddr(DWORD VAddr)
 						}
 					case 0x90:
 						{
-	#ifndef HLE_DSP
+/*	#ifndef HLE_DSP
 							if(cheat&0x2)
 								adsp2105_set_irq_line(ADSP2105_IRQ2, 0);
 							else
@@ -579,17 +585,17 @@ BYTE *iMemPhysWriteAddr(DWORD VAddr)
 								dspIRQClear=0;
 								adsp2105_set_irq_line(ADSP2105_IRQ2, 1);
 							}
-	#else
+	#else*/
 							dspIRQClear=1;
-	#endif
+//	#endif
 							break;
 						}
 					case 0x98:
 						{
 							dspPeek=cheat;
-	#ifdef HLE_DSP
+//	#ifdef HLE_DSP
 							hleDSPIntService();
-	#endif
+//	#endif
 							break;
 						}
 					case 0x100:
@@ -984,61 +990,74 @@ void iMemUpdateDPReg()
 void iMemCopyBootCode()
 {
 	DWORD *dst=(DWORD *)m->dspRMem;
+	
+ 
+	theApp.LogMessage("size of QWORD is %d", sizeof(QWORD)); 
+	theApp.LogMessage("size of DWORD is %d", sizeof(DWORD)); 
+	theApp.LogMessage("size of WORD is %d", sizeof(WORD));
+	theApp.LogMessage("size of BYTE is %d", sizeof(BYTE));
+ 
 
-	fstream *arom=(fstream *) new fstream();
-	arom->open(theApp.m_ARom1,ios::in | ios::binary);
-	arom->read((char *)dst,512*1024);
-	arom->close();
-	delete arom;
+	FILE *arom = NULL;
+	arom=fopen(theApp.m_ARom1,"rb");
+	fread(dst,512*1024, 1, arom);
+	fclose(arom);
+	//delete arom;
 	dst+=512*256;
 	
-	arom=(fstream *) new fstream();
-	arom->open(theApp.m_ARom2,ios::in | ios::binary);
-	arom->read((char *)dst,512*1024);
-	arom->close();
-	delete arom;
+	arom=NULL;
+	arom=fopen(theApp.m_ARom2,"rb");
+	fread(dst,512*1024, 1, arom);
+	fclose(arom);
+	//delete arom;
 	dst+=512*256;
 
-	arom=(fstream *) new fstream();
-	arom->open(theApp.m_ARom3,ios::in | ios::binary);
-	arom->read((char *)dst,512*1024);
-	arom->close();
-	delete arom;
+	theApp.LogMessage("about to load theApp.m_ARom3");
+	arom=NULL;
+	arom=fopen(theApp.m_ARom3,"rb");
+	fread(dst,512*1024, 1, arom);
+	fclose(arom);
+	//delete arom;
 	dst+=512*256;
 
-	arom=(fstream *) new fstream();
-	arom->open(theApp.m_ARom4,ios::in | ios::binary);
-	arom->read((char *)dst,512*1024);
-	arom->close();
-	delete arom;
+	theApp.LogMessage("about to load theApp.m_ARom4");
+	arom=NULL;
+	arom=fopen(theApp.m_ARom4,"rb");
+	fread(dst,512*1024, 1, arom);
+	fclose(arom);
+	//delete arom;
 	dst+=512*256;
 
-	arom=(fstream *) new fstream();
-	arom->open(theApp.m_ARom5,ios::in | ios::binary);
-	arom->read((char *)dst,512*1024);
-	arom->close();
-	delete arom;
+	theApp.LogMessage("about to load theApp.m_ARom5");
+	arom=NULL;
+	arom=fopen(theApp.m_ARom5,"rb");
+	fread(dst,512*1024, 1, arom);
+	fclose(arom);
+	//delete arom;
 	dst+=512*256;
 
-	arom=(fstream *) new fstream();
-	arom->open(theApp.m_ARom6,ios::in | ios::binary);
-	arom->read((char *)dst,512*1024);
-	arom->close();
-	delete arom;
-
+	theApp.LogMessage("about to load theApp.m_ARom6");
+	arom=NULL;
+	arom=fopen(theApp.m_ARom6,"rb");
+	fread(dst,512*1024, 1, arom);
+	fclose(arom);
+	//delete arom;
 	dst+=512*256;
-	arom=(fstream *) new fstream();
-	arom->open(theApp.m_ARom7,ios::in | ios::binary);
-	arom->read((char *)dst,512*1024);
-	arom->close();
-	delete arom;
 
+	theApp.LogMessage("about to load theApp.m_ARom7");
+	arom=NULL;
+	arom=fopen(theApp.m_ARom7,"rb");
+	fread(dst,512*1024, 1, arom);
+	fclose(arom);
+	//delete arom;
 	dst+=512*256;
-	arom=(fstream *) new fstream();
-	arom->open(theApp.m_ARom8,ios::in | ios::binary);
-	arom->read((char *)dst,512*1024);
-	arom->close();
-	delete arom;
+
+	theApp.LogMessage("about to load theApp.m_ARom8");
+	arom=NULL;
+	arom=fopen(theApp.m_ARom8,"rb");
+	fread(dst,512*1024, 1, arom);
+	fclose(arom);
+	//delete arom;
 }
 
 /*
@@ -1070,34 +1089,37 @@ void iMemReadBootCode()
 
 */
 
-void iMemSave(fstream *tmp)
+void iMemSave(FILE *tmp)
 {
 	int i;
 	for(i=0;i<N_SEGMENTS;i++)
 	{
-		tmp->write((char *)iMemAddr[i],MemSize[i]);
+		fwrite(iMemAddr[i],MemSize[i],1,tmp);
+		//tmp->Write(iMemAddr[i],MemSize[i]);
 	}
 
 }
 
-void iMemLoad(fstream *tmp)
+void iMemLoad(FILE *tmp)
 {
 	int i;
 	for(i=0;i<N_SEGMENTS;i++)
 	{
-		tmp->read((char *)iMemAddr[i],MemSize[i]);
+		fread(iMemAddr[i],MemSize[i],1,tmp);
+		//tmp->Read(iMemAddr[i],MemSize[i]);
 	}
 }
 
-void iMemLoadShort(fstream *tmp)
+void iMemLoadShort(FILE *tmp)
 {
-	tmp->read((char *)iMemAddr[0],65536);
-	tmp->read((char *)iMemAddr[1],MemSize[1]);
-	tmp->read((char *)iMemAddr[2],MemSize[2]);
-	tmp->read((char *)iMemAddr[4],MemSize[4]);
+	fread(iMemAddr[0],65536,1, tmp);
+	fread(iMemAddr[1],MemSize[1],1,tmp);
+	fread(iMemAddr[2],MemSize[2],1,tmp);
+	fread(iMemAddr[4],MemSize[4],1,tmp);
 	for(int i=7;i<17;i++)
 	{
-		tmp->read((char *)iMemAddr[i],MemSize[i]);
+		fread(iMemAddr[i],MemSize[i],1,tmp);
+		//tmp->Read(iMemAddr[i],MemSize[i]);
 	}
 }
 
