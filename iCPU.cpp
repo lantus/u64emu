@@ -614,8 +614,7 @@ UINT8 iCpuThreadProc()
 		case DEBUG_FASTSTEP:
 		case NORMAL_GAME:
 			{
-				
-				
+ 	 
 /*
 				DWORD test=iOpCode>>26;
 				BYTE rd,rs,rt,sa;

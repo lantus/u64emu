@@ -32,9 +32,9 @@
 #define PI_DMA_READ             0x4000
 #define ATA_UPDATE				0x8000
 
-#define LOG_STUFF
+//#define LOG_STUFF
 //extern QWORD ICount,NextIntCount;
-#define LOG_ERRORS
+//#define LOG_ERRORS
 //#define LOG_TLBn
 #define HLE_DSP
 
@@ -559,17 +559,17 @@ BYTE *iMemPhysWriteAddr(DWORD VAddr)
 				{
 					case 0x80:	//page flip register?
 						{
-/* TODO:FIX							
+/*
 if  (framespeed){
 	theApp.m_framesToSkip = 2;}
 else {
-	theApp.m_framesToSkip = 0;
-	iCpuVSYNC();}
+	theApp.m_framesToSkip = 0;*/
+	iCpuVSYNC();
 							theApp.m_EmuObj->UpdateDisplay();
 
-							DWORD tmp=~theApp.m_EmuObj->m_InputDevice->MultiScan(inputs);
+							//DWORD tmp=~theApp.m_EmuObj->m_InputDevice->MultiScan(inputs);
 							break;
-*/
+
 						}
 					case 0x88:
 						{

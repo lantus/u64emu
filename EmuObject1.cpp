@@ -55,7 +55,7 @@ CEmuObject::CEmuObject( )
 	 
 	theApp.m_EmuObj=this;
 
-//	m_Display=NULL;
+	m_Display=NULL;
 	m_LastTime=0;
 	m_LastInstruction=0;
 	m_FirstVSYNCTime=0;
@@ -85,9 +85,9 @@ void CEmuObject::StopEmulation()
 
 		//SafeDelete(m_Audio);
 
-		//if(m_Display!=NULL)
-//			m_Display->Close();
-		//SafeDelete(m_Display);
+		if(m_Display!=NULL)
+			m_Display->Close();
+		SafeDelete(m_Display);
 
 		//m_InputDevice->Close();
 		//SafeDelete(m_InputDevice);
@@ -110,14 +110,15 @@ HRESULT CEmuObject::OpenWindowed()
 
 HRESULT CEmuObject::Init()
 {
-//	m_Display=(mmDisplay *)new mmDisplay();
+	m_Display=(mmDisplay *)new mmDisplay();
 //	HRESULT result;
  
 	// init gfx here
  
+	m_Display->Open(640,480);
 
-//	m_Display->ClearScreen();
-//	m_Display->RenderScene();
+	m_Display->ClearScreen();
+	m_Display->RenderScene();
 
 	//m_DirectSoundDevice=(mmDirectSoundDevice *)new mmDirectSoundDevice();
 	//result=m_DirectSoundDevice->Create(0);
@@ -181,9 +182,11 @@ bool CEmuObject::UpdateDisplay()
 //		m_Display->m_FrameCount++;
 	}
 //	else
-	{
-//		m_Display->UpdateScreenBuffer(this,source,(flags&0x03));		TODO:FIX
-	}
+//	{
+		m_Display->UpdateScreenBuffer(source,(flags&0x03));
+//	}
+	
+ 
 	if(CatchMe)
 		CatchMe=2;
 	return true;

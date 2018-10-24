@@ -7,7 +7,7 @@
 // EmuObject.h : header file
 //
 #include "global.h"
-//#include "mmDisplay.h"
+#include "mmDisplay.h"
 //#include "mmSoundBuffer.h"
 //#include "mmDirectInputDevice.h"
 
@@ -32,7 +32,7 @@ public:
 //	mmDirectInputDevice *m_InputDevice;
 
 // our 2d/3d display
-//	mmDisplay *m_Display;
+    mmDisplay *m_Display;
 
 // emu stuff
 //	N64RomFile *m_RomFile;

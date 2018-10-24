@@ -17,15 +17,15 @@ APP_VERSION := 1.0.0
 ICON := logo2.jpg
 
 WINDRES   = windres.exe
-OBJ       = obj/2100dasm.o obj/adsp2100.o obj/iMemory.o obj/iMemoryOps.o obj/iBranchOps.o obj/iCPU.o obj/iFPOps.o obj/iATA.o obj/iMain.o obj/hleDSP.o obj/iRom.o obj/EmuObject1.o obj/ki.o obj/iGeneralOps.o
-LINKOBJ   = obj/2100dasm.o obj/adsp2100.o obj/iMemory.o obj/iMemoryOps.o obj/iBranchOps.o obj/iCPU.o obj/iFPOps.o obj/iATA.o obj/iMain.o obj/hleDSP.o obj/iRom.o obj/EmuObject1.o obj/ki.o obj/iGeneralOps.o
-LIBS      = -specs=$(DEVKITPRO)/libnx/switch.specs -g -march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE -L$(DEVKITPRO)/libnx/lib -L$(DEVKITPRO)/portlibs/switch/lib -lnx
+OBJ       = obj/2100dasm.o obj/adsp2100.o obj/iMemory.o obj/iMemoryOps.o obj/iBranchOps.o obj/iCPU.o obj/iFPOps.o obj/iATA.o obj/iMain.o obj/hleDSP.o obj/iRom.o obj/EmuObject1.o obj/ki.o obj/iGeneralOps.o obj/mmDisplay.o
+LINKOBJ   = obj/2100dasm.o obj/adsp2100.o obj/iMemory.o obj/iMemoryOps.o obj/iBranchOps.o obj/iCPU.o obj/iFPOps.o obj/iATA.o obj/iMain.o obj/hleDSP.o obj/iRom.o obj/EmuObject1.o obj/ki.o obj/iGeneralOps.o obj/mmDisplay.o
+LIBS      = -specs=$(DEVKITPRO)/libnx/switch.specs -g -march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE -L$(DEVKITPRO)/libnx/lib -L$(DEVKITPRO)/portlibs/switch/lib -lglad -lEGL -lglapi -ldrm_nouveau -lnx
 INCS      = -I$(DEVKITPRO)/portlibs/switch/include/SDL2 -I"src/main" -I$(DEVKITPRO)/libnx/include -I$(DEVKITPRO)/portlibs/switch/include
 CXXINCS   = -I$(DEVKITPRO)/portlibs/switch/include/SDL2 -I"src/main" -I$(DEVKITPRO)/libnx/include -I$(DEVKITPRO)/portlibs/switch/include
 BIN       = release/kinx.elf
 BUILD	  =	build
 BINDIR	  = release
-DEFINES   =  -DSWITCH
+DEFINES   = -D__SWITCH__
 CXXFLAGS  = $(CXXINCS) $(DEFINES) -march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE -O3 -w
 CFLAGS    = $(INCS) $(DEFINES)    -march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE -O3 -w
 GPROF     = gprof.exe
@@ -102,6 +102,8 @@ obj/ki.o: $(GLOBALDEPS) ki.cpp
 	$(CPP) -c ki.cpp -o obj/ki.o $(CXXFLAGS)	
 obj/iGeneralOps.o: $(GLOBALDEPS) iGeneralOps.cpp
 	$(CPP) -c iGeneralOps.cpp -o obj/iGeneralOps.o $(CXXFLAGS)	
+obj/mmDisplay.o: $(GLOBALDEPS) mmDisplay.cpp
+	$(CPP) -c mmDisplay.cpp -o obj/mmDisplay.o $(CXXFLAGS)		
  
 #---------------------------------------------------------------------------------
 # main targets
