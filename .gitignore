@@ -6,3 +6,4 @@ release/kinx.nso
 release/kinx.nro
 release/kinx.nacp
 release/kinx.elf
+*.dat

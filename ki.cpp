@@ -12,7 +12,7 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-//#define RELEASE_BUILD
+#define RELEASE_BUILD
 /////////////////////////////////////////////////////////////////////////////
 // CKIApp
  
@@ -191,7 +191,10 @@ void BootKI1(void)
 	e.Emulate("u98-l15d");
 	theApp.m_UCode = 0;
 
-	while (!bQuitSignal);
+	while (!bQuitSignal)
+	{
+			e.UpdateDisplay();
+	}
 	e.StopEmulation();
 	 
 }

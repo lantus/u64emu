@@ -4183,7 +4183,7 @@ void hleDSPProcess(WORD ar)
 
 void hleDSPUpdateAudio()
 {
-	if(hleDSPPingTime==0) hleDSPPingTime=svcGetSystemTick()+7;
+	if(hleDSPPingTime==0) hleDSPPingTime=getTime()+7;
 	WORD tmp=dspDMem[0x60c];
 	if(tmp==0x400)
 	{
@@ -4194,7 +4194,7 @@ void hleDSPUpdateAudio()
 		adsp2100_set_reg(ADSP2100_I7,0x400);
 		dspUpdateCount++;
 		theApp.m_EmuObj->UpdateAudio(0x400);
-		diff=hleDSPPingTime-svcGetSystemTick();
+		diff=hleDSPPingTime-getTime();
 		if(diff>0)
 		{
 			svcSleepThread(diff);
@@ -4203,7 +4203,7 @@ void hleDSPUpdateAudio()
 		else
 		{
 			hleDSPPingTime+=7;
-			if(diff<-500) hleDSPPingTime=svcGetSystemTick()+7;
+			if(diff<-500) hleDSPPingTime=getTime()+7;
 		}
 	}
 	else
@@ -4213,7 +4213,7 @@ void hleDSPUpdateAudio()
 		dspDMem[0x60c]=tmp;
 		adsp2100_set_reg(ADSP2100_I7,0x4f0);
 		theApp.m_EmuObj->UpdateAudio(0x4f0);
-		diff=hleDSPPingTime-svcGetSystemTick();
+		diff=hleDSPPingTime-getTime();
 		if(diff>0)
 		{
 			svcSleepThread(diff);
@@ -4222,7 +4222,7 @@ void hleDSPUpdateAudio()
 		else
 		{
 			hleDSPPingTime+=7;
-			if(diff<-500) hleDSPPingTime=svcGetSystemTick()+7;
+			if(diff<-500) hleDSPPingTime=getTime()+7;
 		}
 	}
 }

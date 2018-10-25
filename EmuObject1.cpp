@@ -165,7 +165,7 @@ bool CEmuObject::UpdateDisplay()
 	if(m_NumVSYNCs>90)
 	{
 		m_NumVSYNCs=1;
-		iCpuNextVSYNC=svcGetSystemTick()+16;
+		iCpuNextVSYNC=getTime()+16;
 	}
 
 	m_Display->UpdateScreenBuffer(source);

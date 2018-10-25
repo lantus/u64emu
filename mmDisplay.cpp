@@ -245,12 +245,10 @@ extern bool iCpuResetVSYNC;
 
 mmDisplay::mmDisplay()
 {
-	
 	IntermediateBuffer	= (WORD *)malloc((320 * 242 + 2) * sizeof(WORD));
 	IntermediateBuffer += 321;
-
-	 
-
+	
+	gfxInitResolution(1280, 720);
 }
 
 mmDisplay::~mmDisplay()
@@ -308,7 +306,6 @@ HRESULT mmDisplay::Open(
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
  
-
     // Textures
     glGenTextures(1, &s_tex);
     glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
@@ -377,15 +374,16 @@ void mmDisplay::UpdateScreenBuffer(unsigned char *source)
 	//svcOutputDebugString("UpdateScreenBuffer",20);
 	
 	m_FrameCount++; 
-	
+	 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	WORD	*dst = IntermediateBuffer;	 
+	DWORD *src=(DWORD *)source;
+	WORD  *dst = IntermediateBuffer;	 
 	DWORD p1, p2;
  
 	for (int y = 240; y > 0; y--) {
 		for (int x = 160; x > 0; x--) {
-			p2 = *(source++);
+			p2 = *(src++);
 			p1 = p2 & 0x7fff;
 			p2 >>= 16;
 			p2 &= 0x7fff;
@@ -394,7 +392,7 @@ void mmDisplay::UpdateScreenBuffer(unsigned char *source)
 		}
 	}
 	 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 320, 240, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, IntermediateBuffer);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB565, 320, 240, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, IntermediateBuffer);	
 	
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

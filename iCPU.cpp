@@ -163,8 +163,8 @@ UINT8 iDspThreadProc()
 				hleDSPMain();
 				hleDSPMain2();
 
-				if(hleDSPPingTime==0) hleDSPPingTime=armGetSystemTick ()+7;
-				if(hleDSPPingTime==0) hleDSPPingTime=armGetSystemTick()+7;
+				if(hleDSPPingTime==0) hleDSPPingTime=getTime ()+7;
+				if(hleDSPPingTime==0) hleDSPPingTime=getTime()+7;
 				WORD tmp=*(WORD *)&m->dspDMem[0x60c*2];
 				if(tmp==0x400)
 				{
@@ -173,7 +173,7 @@ UINT8 iDspThreadProc()
 					tmp=0x4f0;
 					dspUpdateCount++;
 					theApp.m_EmuObj->UpdateAudio(0x400);
-					diff=hleDSPPingTime-armGetSystemTick();
+					diff=hleDSPPingTime-getTime();
 					if(diff>0)
 					{
 						svcSleepThread(diff);
@@ -182,7 +182,7 @@ UINT8 iDspThreadProc()
 					else
 					{
 						hleDSPPingTime+=7;
-						if(diff<-500) hleDSPPingTime=armGetSystemTick()+7;
+						if(diff<-500) hleDSPPingTime=getTime()+7;
 					}
 				}
 				else
@@ -190,7 +190,7 @@ UINT8 iDspThreadProc()
 					int diff;
 					tmp=0x400;
 					theApp.m_EmuObj->UpdateAudio(0x4f0);
-					diff=hleDSPPingTime-armGetSystemTick();
+					diff=hleDSPPingTime-getTime();
 					if(diff>0)
 					{
 						svcSleepThread(diff);
@@ -199,7 +199,7 @@ UINT8 iDspThreadProc()
 					else
 					{
 						hleDSPPingTime+=8;
-						if(diff<-500) hleDSPPingTime=armGetSystemTick()+8;
+						if(diff<-500) hleDSPPingTime=getTime()+8;
 					}
 				}
 				*(WORD *)&m->dspDMem[0x60c*2]=tmp;
@@ -435,7 +435,7 @@ UINT8 iDspThreadProc()
 					hleDSPMain();
 					hleDSPMain2();
 
-					if(hleDSPPingTime==0) hleDSPPingTime=armGetSystemTick()+7;
+					if(hleDSPPingTime==0) hleDSPPingTime=getTime()+7;
 					WORD tmp=*(WORD *)&m->dspDMem[0x60c*2];
 					if(tmp==0x400)
 					{
@@ -445,7 +445,7 @@ UINT8 iDspThreadProc()
 						adsp2100_set_reg(ADSP2100_I7,0x400);
 						dspUpdateCount++;
 						theApp.m_EmuObj->UpdateAudio(0x400);
-						diff=hleDSPPingTime-armGetSystemTick();
+						diff=hleDSPPingTime-getTime();
 						if(diff>0)
 						{
 							svcSleepThread(diff);
@@ -454,7 +454,7 @@ UINT8 iDspThreadProc()
 						else
 						{
 							hleDSPPingTime+=7;
-							if(diff<-500) hleDSPPingTime=armGetSystemTick()+7;
+							if(diff<-500) hleDSPPingTime=getTime()+7;
 						}
 					}
 					else
@@ -463,7 +463,7 @@ UINT8 iDspThreadProc()
 						tmp=0x400;
 						adsp2100_set_reg(ADSP2100_I7,0x4f0);
 						theApp.m_EmuObj->UpdateAudio(0x4f0);
-						diff=hleDSPPingTime-armGetSystemTick();
+						diff=hleDSPPingTime-getTime();
 						if(diff>0)
 						{
 							svcSleepThread(diff);
@@ -472,7 +472,7 @@ UINT8 iDspThreadProc()
 						else
 						{
 							hleDSPPingTime+=7;
-							if(diff<-500) hleDSPPingTime=armGetSystemTick()+7;
+							if(diff<-500) hleDSPPingTime=getTime()+7;
 						}
 					}
 					*(WORD *)&m->dspDMem[0x60c*2]=tmp;
@@ -484,7 +484,7 @@ UINT8 iDspThreadProc()
 
 				if((pc>=0x12c)&&(pc<0x13b))
 				{
-					if(hleDSPPingTime==0) hleDSPPingTime=armGetSystemTick()+7;
+					if(hleDSPPingTime==0) hleDSPPingTime=getTime()+7;
 					WORD tmp=*(WORD *)&m->dspDMem[0x60c*2];
 					if(tmp==0x400)
 					{
@@ -494,7 +494,7 @@ UINT8 iDspThreadProc()
 						adsp2100_set_reg(ADSP2100_I7,0x400);
 						dspUpdateCount++;
 						theApp.m_EmuObj->UpdateAudio(0x400);
-						diff=hleDSPPingTime-armGetSystemTick();
+						diff=hleDSPPingTime-getTime();
 						if(diff>0)
 						{
 							svcSleepThread(diff);
@@ -503,7 +503,7 @@ UINT8 iDspThreadProc()
 						else
 						{
 							hleDSPPingTime+=7;
-							if(diff<-500) hleDSPPingTime=armGetSystemTick()+7;
+							if(diff<-500) hleDSPPingTime=getTime()+7;
 						}
 					}
 					else
@@ -512,7 +512,7 @@ UINT8 iDspThreadProc()
 						tmp=0x400;
 						adsp2100_set_reg(ADSP2100_I7,0x4f0);
 						theApp.m_EmuObj->UpdateAudio(0x4f0);
-						diff=hleDSPPingTime-armGetSystemTick();
+						diff=hleDSPPingTime-getTime();
 						if(diff>0)
 						{
 							svcSleepThread(diff);
@@ -521,7 +521,7 @@ UINT8 iDspThreadProc()
 						else
 						{
 							hleDSPPingTime+=7;
-							if(diff<-500) hleDSPPingTime=armGetSystemTick()+7;
+							if(diff<-500) hleDSPPingTime=getTime()+7;
 						}
 					}
 					*(WORD *)&m->dspDMem[0x60c*2]=tmp;
@@ -893,10 +893,10 @@ void iCpuVSYNC()
 //	if(dynaVCount<5)
 //		return;
 	if(iCpuNextVSYNC==0)
-		iCpuNextVSYNC=armGetSystemTick()+theApp.m_FrameDelay;
+		iCpuNextVSYNC=getTime()+theApp.m_FrameDelay;
 	if(theApp.m_LockOn)
 	{
-		int diff=(iCpuNextVSYNC-armGetSystemTick());
+		int diff=(iCpuNextVSYNC-getTime());
 
 
 		if(lagging)

@@ -22,6 +22,8 @@
 // See ki.cpp for the implementation of this class
 //
 
+extern float getTime();
+
 class CKIApp
 {
 public:

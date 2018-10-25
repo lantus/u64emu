@@ -489,7 +489,7 @@ BYTE *iMemPhysWriteAddr(DWORD VAddr)
 							if (doframe==59) doframe=0;
 							if (doframe%2==0){**/
 							iCpuVSYNC();
-							theApp.m_EmuObj->UpdateDisplay();
+							//theApp.m_EmuObj->UpdateDisplay();
 							//DWORD tmp=~theApp.m_EmuObj->m_InputDevice->MultiScan(inputs);//}
 							*(DWORD *)&m->aiReg[0x98]=inputs[1]&0xffff;
 							*(DWORD *)&m->aiReg[0x90]=inputs[0]&0xffff;
