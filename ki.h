@@ -82,6 +82,8 @@ public:
 	void LoadGame();
 	void SaveGame();
 	CEmuObject *m_EmuObj;
+	mmInputDevice *m_InputDevice;
+
 	
 	int ExitInstance();
 	BOOL InitInstance();

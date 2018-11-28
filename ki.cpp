@@ -154,17 +154,30 @@ extern "C"
 
 int main()
 {
+		
+#ifdef NXOVERCLOCK
+	// Overclock to 1.7Ghz
+	if(R_SUCCEEDED(pcvInitialize())){
+		pcvSetClockRate(PcvModule::PcvModule_Cpu, 1785000000);
+	}
+#endif	
+
 	BootKI1();
+
 	
+#ifdef NXOVERCLOCK		
+	// Reset stock clocks
+	pcvSetClockRate(PcvModule::PcvModule_Cpu, 1020000000);
+	pcvExit();	
+#endif	
+
 	return 0;
 }
 
 void BootKI1(void)
 {
 	CEmuObject e;
-
  
-
 	theApp.m_UCode		= 0;
 	theApp.m_BootCode	= 0x3f;
 	theApp.m_DIPS		= 3584;
@@ -195,6 +208,7 @@ void BootKI1(void)
 	{
 			e.UpdateDisplay();
 	}
+	
 	e.StopEmulation();
 	 
 }
@@ -204,7 +218,6 @@ void BootKI2(void)
 {
 	CEmuObject e;
  
-
 	theApp.m_UCode		= 0;
  	theApp.m_BootCode	= 0x3f;
 	theApp.m_DIPS		= 3584;

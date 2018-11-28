@@ -46,6 +46,9 @@ extern DWORD aiDataUsed;
 DWORD lastTime=0;
 DWORD aiWrites=0;
 extern DWORD cheat;
+
+extern WORD inputs[4];
+
 /////////////////////////////////////////////////////////////////////////////
 // CEmuObject dialog
 
@@ -89,8 +92,8 @@ void CEmuObject::StopEmulation()
 			m_Display->Close();
 		SafeDelete(m_Display);
 
-		//m_InputDevice->Close();
-		//SafeDelete(m_InputDevice);
+		m_InputDevice->Close();
+		SafeDelete(m_InputDevice);
 		m_Open=false;
 
 
@@ -116,7 +119,6 @@ HRESULT CEmuObject::Init()
 	// init gfx here
  
 	m_Display->Open(640,480);
-
 	m_Display->ClearScreen();
 	m_Display->RenderScene();
 
@@ -127,11 +129,10 @@ HRESULT CEmuObject::Init()
 //		SafeDelete(m_DirectSoundDevice);
 //	}
 
-//	m_InputDevice=(mmDirectInputDevice *)new mmDirectInputDevice();
-//	theApp.m_InputDevice=m_InputDevice;
-//	m_InputDevice->Create(DISCL_FOREGROUND,this->m_hWnd);
-//	m_InputDevice->Open();
-
+	m_InputDevice=(mmInputDevice *)new mmInputDevice();
+	theApp.m_InputDevice=m_InputDevice;
+	m_InputDevice->Create();
+	m_InputDevice->Open();
 	m_Open=true;
 	return(0);
 }
@@ -169,8 +170,8 @@ bool CEmuObject::UpdateDisplay()
 	}
 
 	m_Display->UpdateScreenBuffer(source);
+	m_InputDevice->MultiScan(inputs);
 	
- 
 	return true;
 }
 

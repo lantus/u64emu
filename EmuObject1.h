@@ -9,7 +9,7 @@
 #include "global.h"
 #include "mmDisplay.h"
 //#include "mmSoundBuffer.h"
-//#include "mmDirectInputDevice.h"
+#include "mmInputDevice.h"
 
 #include "iMain.h"
 /////////////////////////////////////////////////////////////////////////////
@@ -29,7 +29,7 @@ public:
 	char m_FileName[256];
 
 // our input device
-//	mmDirectInputDevice *m_InputDevice;
+	mmInputDevice *m_InputDevice;
 
 // our 2d/3d display
     mmDisplay *m_Display;

@@ -2102,7 +2102,7 @@ Label26cc0:
 
 void hleUpdateScreen(WORD page)
 {
- 
+	//svcOutputDebugString("hleUpdateScreen",20);
 }
 
 void hleDSPCommand(WORD command)

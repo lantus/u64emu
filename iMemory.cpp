@@ -188,7 +188,7 @@ void iMemDestruct()
 	SafeFree(m);
 }
 
-void iMemFinalCheck()
+inline void iMemFinalCheck()
 {
     if(iMemToDo)
     {          
@@ -199,7 +199,7 @@ void iMemFinalCheck()
 }
 
 
-BYTE *iMemPhysReadAddr(DWORD VAddr)
+inline BYTE *iMemPhysReadAddr(DWORD VAddr)
 {
 //	iCpuStepDSP();
 	switch(VAddr>>24)
@@ -400,7 +400,7 @@ BYTE *iMemPhysReadAddr(DWORD VAddr)
 } 
 extern bool framespeed;
 //int doframe=0;
-BYTE *iMemPhysWriteAddr(DWORD VAddr)
+inline BYTE *iMemPhysWriteAddr(DWORD VAddr)
 {
 //	iCpuStepDSP();
 	switch(VAddr>>24)
@@ -490,7 +490,7 @@ BYTE *iMemPhysWriteAddr(DWORD VAddr)
 							if (doframe%2==0){**/
 							iCpuVSYNC();
 							//theApp.m_EmuObj->UpdateDisplay();
-							//DWORD tmp=~theApp.m_EmuObj->m_InputDevice->MultiScan(inputs);//}
+							DWORD tmp=~theApp.m_EmuObj->m_InputDevice->MultiScan(inputs);//}
 							*(DWORD *)&m->aiReg[0x98]=inputs[1]&0xffff;
 							*(DWORD *)&m->aiReg[0x90]=inputs[0]&0xffff;
 							break;
@@ -559,9 +559,8 @@ BYTE *iMemPhysWriteAddr(DWORD VAddr)
 				{
 					case 0x80:	//page flip register?
 						{							 
-							iCpuVSYNC();
-							theApp.m_EmuObj->UpdateDisplay();
-
+							//iCpuVSYNC();
+							//theApp.m_EmuObj->UpdateDisplay();
 							//DWORD tmp=~theApp.m_EmuObj->m_InputDevice->MultiScan(inputs);
 							break;
 

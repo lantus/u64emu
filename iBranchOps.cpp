@@ -13,7 +13,7 @@
 #ifdef CHECK_BRANCH_IN_BRANCH
 bool logJAL=false;
 
-bool CheckBranchInBranch()
+inline bool CheckBranchInBranch()
 {
 	if(r->Delay)
 		return(true);
