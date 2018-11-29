@@ -20,8 +20,8 @@ WINDRES   = windres.exe
 OBJ       = obj/2100dasm.o obj/adsp2100.o obj/iMemory.o obj/iMemoryOps.o obj/iBranchOps.o obj/iCPU.o obj/iFPOps.o obj/iATA.o obj/iMain.o obj/hleDSP.o obj/hleMain.o obj/iRom.o obj/EmuObject1.o obj/ki.o obj/iGeneralOps.o obj/mmDisplay.o obj/mmInputDevice.o
 LINKOBJ   = obj/2100dasm.o obj/adsp2100.o obj/iMemory.o obj/iMemoryOps.o obj/iBranchOps.o obj/iCPU.o obj/iFPOps.o obj/iATA.o obj/iMain.o obj/hleDSP.o obj/hleMain.o obj/iRom.o obj/EmuObject1.o obj/ki.o obj/iGeneralOps.o obj/mmDisplay.o obj/mmInputDevice.o
 LIBS      = -specs=$(DEVKITPRO)/libnx/switch.specs -g -march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE -mcpu=cortex-a57+crc+fp+simd -L$(DEVKITPRO)/libnx/lib -L$(DEVKITPRO)/portlibs/switch/lib -lglad -lEGL -lglapi -ldrm_nouveau -lnx
-INCS      = -I$(DEVKITPRO)/portlibs/switch/include/SDL2 -I"src/main" -I$(DEVKITPRO)/libnx/include -I$(DEVKITPRO)/portlibs/switch/include
-CXXINCS   = -I$(DEVKITPRO)/portlibs/switch/include/SDL2 -I"src/main" -I$(DEVKITPRO)/libnx/include -I$(DEVKITPRO)/portlibs/switch/include
+INCS      = -I"src/main" -I$(DEVKITPRO)/libnx/include -I$(DEVKITPRO)/portlibs/switch/include
+CXXINCS   = -I"src/main" -I$(DEVKITPRO)/libnx/include -I$(DEVKITPRO)/portlibs/switch/include
 BIN       = release/kinx.elf
 BUILD	  =	build
 BINDIR	  = release

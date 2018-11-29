@@ -126,7 +126,7 @@ void iMainStartCPU()
 	
 	u32 prio;
     svcGetThreadPriority(&prio, CUR_THREAD_HANDLE);  
-	threadCreate(&cpu_thread, (void (*)(void *))iCpuThreadProc, &dwThrdParam, STACKSIZE, 0x2F   , 1);
+	threadCreate(&cpu_thread, (void (*)(void *))iCpuThreadProc, &dwThrdParam, STACKSIZE, 0x2C   , 1);
 	threadStart(&cpu_thread);
 	threadCreate(&dsp_thread, (void (*)(void *))iDspThreadProc, &dwThrdParam, STACKSIZE, 0x2F   , 2);
 	threadStart(&dsp_thread);

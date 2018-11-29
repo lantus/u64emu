@@ -27,7 +27,7 @@ extern FILE *ataMFile;
 extern bool logJAL;
 extern bool nDiagnostics;
  
-const int DEADZONE = 0x4000;
+const int DEADZONE = 0x1000;
 
 unsigned long KIMap[32] = { 0x00000001,0x00000002,0x00000004,0x00000008,
 							0x00000010,0x00000020,0x00000040,0x00000080,
@@ -105,8 +105,8 @@ DWORD mmInputDevice::MultiScan(WORD *Values)
 	
 	JoystickPosition joyPositionLeft, joyPositionRight;
 
-    //hidJoystickRead(&joyPositionLeft, CONTROLLER_P1_AUTO, JOYSTICK_LEFT);
-    //hidJoystickRead(&joyPositionRight, CONTROLLER_P1_AUTO, JOYSTICK_RIGHT);
+    hidJoystickRead(&joyPositionLeft, CONTROLLER_P1_AUTO, JOYSTICK_LEFT);
+    hidJoystickRead(&joyPositionRight, CONTROLLER_P1_AUTO, JOYSTICK_RIGHT);
  
 /* second player - fix later 
 	if (k & KEY_PLUS)
@@ -257,7 +257,7 @@ DWORD mmInputDevice::MultiScan(WORD *Values)
 		state|=mask;
 	}
 
-	if ((k & KEY_DUP) ||
+	if ((h & KEY_DUP) ||
 	    (joyPositionLeft.dy >  DEADZONE))
 	{
 		mask=(1<<17);
@@ -265,7 +265,7 @@ DWORD mmInputDevice::MultiScan(WORD *Values)
 		state|=mask;
 	}
 
-	if ((k & KEY_DDOWN) ||
+	if ((h & KEY_DDOWN) ||
 		(joyPositionLeft.dy <  -DEADZONE))
 	{
 		mask=(1<<18);
@@ -273,7 +273,7 @@ DWORD mmInputDevice::MultiScan(WORD *Values)
 		state|=mask;
 	}
 
-	if ((k & KEY_DLEFT) ||
+	if ((h & KEY_DLEFT) ||
 		(joyPositionLeft.dx < -DEADZONE))
 	{
 		mask=(1<<19);
@@ -281,7 +281,7 @@ DWORD mmInputDevice::MultiScan(WORD *Values)
 		state|=mask;
 	}
 
-	if ((k & KEY_DRIGHT) ||
+	if ((h & KEY_DRIGHT) ||
 		(joyPositionLeft.dx > DEADZONE))
 	{
 		mask=(1<<20);
